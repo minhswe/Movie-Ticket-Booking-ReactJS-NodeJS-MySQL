@@ -6,15 +6,16 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
+import FormatReleaseDate from "../../utilities/FormatReleaseDate";
 export default function MediaCard({ Movie }) {
     const navigate = useNavigate();
     const handleClick = (Movie) => {
         navigate(`/movie/${Movie.Id}`, {state: {Movie}});
     }
     return (
-        <Card sx={{ width: "22%", height: 500, marginTop: '20px' }}>
+        <Card sx={{ width: "22%", height: 510, marginTop: '20px' }}>
             <CardMedia
-                sx={{ height: "65%", objectFit: "contain" }}
+                sx={{ height: "60%", width: "100%"}}
                 image={`${process.env.REACT_APP_API_URL}/${Movie.Poster}`}
                 title="Movie's poster"
             />
@@ -29,7 +30,7 @@ export default function MediaCard({ Movie }) {
                 <Typography variant="body2" sx={{ color: "text.secondary", display: "flex", flexDirection: "column" }}>
                     <span className="infor-bold">Thể loại: </span>
                     <span className="infor-bold">Thời lượng: <span className="infor-normal">{Movie.RunningTime}</span></span>
-                    <span className="infor-bold">Khởi chiếu: <span className="infor-normal">{Movie.ReleaseDate}</span></span>
+                    <span className="infor-bold">Khởi chiếu: <span className="infor-normal">{FormatReleaseDate(Movie.ReleaseDate)}</span></span>
                 </Typography>
             </CardContent>
             <CardActions>

@@ -13,6 +13,7 @@ const YoutubeEmbed = ({ url }) => {
     return (
         <div className="video-responsive">
             <iframe
+            
                 src={`https://www.youtube.com/embed/${embedId}`}
                 className="youtube-iframe" // Add a class for styling
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

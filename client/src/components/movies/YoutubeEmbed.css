@@ -1,8 +1,9 @@
 .video-responsive {
     position: relative;
-    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
     height: 0;
     overflow: hidden;
+    background: #000;
 }
 
 .youtube-iframe {
@@ -11,5 +12,5 @@
     left: 0;
     width: 100%;
     height: 100%;
-    border: none; /* Remove border */
+    border: 0;
 }
