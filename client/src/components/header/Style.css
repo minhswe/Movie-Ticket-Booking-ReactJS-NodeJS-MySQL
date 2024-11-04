@@ -1,0 +1,28 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container{
+    width: 100%;
+    height: 80px;
+    background-color: #000437;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.logo{
+    width: 120px;
+}
+
+.logo img{
+    width: 100%;
+}
+
+.navbar-menu{
+    width: 60%;
+    display: flex;
+    justify-content: center;
+}
