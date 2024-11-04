@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Card from "../cards/Card";
 import axios from "../../api/axios";
-import "./NowShowingStyle.css"
-const NowShowing = () => {
+import "./NowShowingStyle.css";
+const NowShowing = (movie) => {
     const [movies, setMovies] = useState([]);
 
     useEffect(() => {
@@ -19,17 +19,29 @@ const NowShowing = () => {
     }, [movies]); // This will run every time `movies` changes
 
     return (
-        <div className="movie-container">
-            {movies.length > 0 ? (
-                movies.map((movie) => (
-                    <Card 
-                    title={movie.Title}
-                    poster={movie.Poster}
-                    />
-                ))
-            ) : (
-                <p>No movies currently showing.</p> // Message when there are no movies
-            )}
+        <div className="movie-list-container">
+            <div className="movie-list-items">
+                {movies.length > 0 ? (
+                    movies.map((movie) => (
+                        <Card
+                        Movie={movie}
+                            
+                        />
+                    ))
+                ) : (
+                    <p>No movies currently showing.</p> // Message when there are no movies
+                )}
+                {movies.length > 0 ? (
+                    movies.map((movie) => (
+                        <Card
+                        Movie={movie}
+                            
+                        />
+                    ))
+                ) : (
+                    <p>No movies currently showing.</p> // Message when there are no movies
+                )}
+            </div>
         </div>
     );
 };

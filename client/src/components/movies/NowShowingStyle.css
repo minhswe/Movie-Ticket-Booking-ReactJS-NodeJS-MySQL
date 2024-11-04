@@ -1,5 +1,23 @@
-.movie-container{
-    width: 100%;
-    max-height: 80vh;
-    overflow-y: auto; /* Enables vertical scrolling */
+.movie-list-container{
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.movie-list-items{
+    width: 80%;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.infor-bold{
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.infor-normal{
+    font-weight: normal;
+    font-size: 14px;
 }

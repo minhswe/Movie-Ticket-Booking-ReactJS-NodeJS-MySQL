@@ -7,22 +7,27 @@ import ProtectedRoutes from "./utilities/ProtectedRoutes";
 import Header from "./components/header/Header";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NowShowing from "./components/movies/NowShowing";
+import MovieDetail from "./components/movies/MoVieDetail"
+import './App.css';
 const App = () => {
     return (
-        <>
+        <div className="app-container">
             <Router basename="/">
                 <Header />
-                <Routes>
-                    <Route element={<ProtectedRoutes />}>
-                        <Route path="/user/profile" element={<Profile />} />
-                    </Route>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/user/register" element={<RegisterForm />} />
-                    <Route path="/user/signin" element={<SignInForm />} />
-                    <Route path="/movies/nowshowing" element={<NowShowing />} />
-                </Routes>
+                <div className="content">
+                    <Routes>
+                        <Route element={<ProtectedRoutes />}>
+                            <Route path="/user/profile" element={<Profile />} />
+                        </Route>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/user/register" element={<RegisterForm />} />
+                        <Route path="/user/signin" element={<SignInForm />} />
+                        <Route path="/movies/nowshowing" element={<NowShowing />} />
+                        <Route path="/movie/:id" element={<MovieDetail />}></Route>
+                    </Routes>
+                </div>
             </Router>
-        </>
+        </div>
     );
 };
 
