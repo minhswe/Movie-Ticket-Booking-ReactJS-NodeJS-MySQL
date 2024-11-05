@@ -7,6 +7,8 @@ import YoutubeEmbed from "./YoutubeEmbed";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import FormatReleaseDate from "../../utilities/FormatReleaseDate";
+import FormatGenres from "../../utilities/FormatGenres";
 const MoVieDetail = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const location = useLocation();
@@ -55,11 +57,15 @@ const MoVieDetail = () => {
                         <div className="detail-content-title">
                             <h2>{Movie.Title}</h2>
                         </div>
-                        <span className="infor-bold">Genres: </span>
+                        <span className="infor-bold">Genres: 
+                        <span className="infor-normal">
+                                {FormatGenres(Movie)}
+                            </span>
+                        </span>
                         <span className="infor-bold">
                             Release Date:{" "}
                             <span className="infor-normal">
-                                {Movie.ReleaseDate}
+                                {FormatReleaseDate(Movie.ReleaseDate)}
                             </span>
                         </span>
                         <span className="infor-bold">

@@ -7,34 +7,71 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import FormatReleaseDate from "../../utilities/FormatReleaseDate";
+import FormatGenres from "../../utilities/FormatGenres";
 export default function MediaCard({ Movie }) {
+    // const getGenres = (Movie) => {
+    //     const genres = Movie.Genres;
+    //     let linkedGenres = "";
+    //     if (genres && genres.length > 0){
+    //         genres.map((genre) => {
+    //             linkedGenres += `${genre.GenreName}, `;
+    //         })
+    //         const formatGenres = linkedGenres.slice(0, linkedGenres.length - 2);
+    //         console.log("formatGenres", formatGenres)
+    //         return formatGenres;
+    //     }
+    //     return "";
+    // };
+    // getGenres(Movie);
     const navigate = useNavigate();
     const handleClick = (Movie) => {
-        navigate(`/movie/${Movie.Id}`, {state: {Movie}});
-    }
+        navigate(`/movie/${Movie.Id}`, { state: { Movie } });
+    };
     return (
-        <Card sx={{ width: "22%", height: 510, marginTop: '20px' }}>
+        <Card sx={{ width: "22%", height: 550, marginTop: "20px" }}>
             <CardMedia
-                sx={{ height: "60%", width: "100%"}}
+                sx={{ height: "60%", width: "100%" }}
                 image={`${process.env.REACT_APP_API_URL}/${Movie.Poster}`}
                 title="Movie's poster"
             />
             <CardContent>
                 <Typography
-                    sx={{ fontSize: 14, color: '#222', fontWeight: 'bold' }}
+                    sx={{ fontSize: 14, color: "#222", fontWeight: "bold" }}
                     gutterBottom
                     component="div"
                 >
                     {Movie.Title}
                 </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary", display: "flex", flexDirection: "column" }}>
-                    <span className="infor-bold">Thể loại: </span>
-                    <span className="infor-bold">Thời lượng: <span className="infor-normal">{Movie.RunningTime}</span></span>
-                    <span className="infor-bold">Khởi chiếu: <span className="infor-normal">{FormatReleaseDate(Movie.ReleaseDate)}</span></span>
+                <Typography
+                    variant="body2"
+                    sx={{
+                        color: "text.secondary",
+                        display: "flex",
+                        flexDirection: "column",
+                    }}
+                >
+                    <span className="infor-bold">
+                        Thể loại:{" "}
+                        <span className="infor-normal">{FormatGenres(Movie)}</span>
+                    </span>
+                    <span className="infor-bold">
+                        Thời lượng:{" "}
+                        <span className="infor-normal">
+                            {Movie.RunningTime}
+                        </span>
+                    </span>
+                    <span className="infor-bold">
+                        Khởi chiếu:{" "}
+                        <span className="infor-normal">
+                            {FormatReleaseDate(Movie.ReleaseDate)}
+                        </span>
+                    </span>
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button size="small" onClick={() => handleClick(Movie)}>Detail</Button>
+                <Button size="small" onClick={() => handleClick(Movie)}>
+                    Detail
+                </Button>
                 <Button size="small">Booking</Button>
             </CardActions>
         </Card>

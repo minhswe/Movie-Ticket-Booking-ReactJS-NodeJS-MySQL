@@ -299,7 +299,10 @@ values ("Action"),
 ("Sports"),
 ("Thriller"),
 ("Western");
-
+INSERT INTO Genres (GenreName)
+values ("Animation");
+INSERT INTO Genres (GenreName)
+values ("Crime");
 --
 DESCRIBE MovieStatuses;
 INSERT INTO MovieStatuses(StatusName)
@@ -346,6 +349,15 @@ Arthur not only stumbles upon true love, but also finds the music that\'s always
 1);
 SELECT * FROM Movies;
 
+DESCRIBE moviesgenres;
+SELECT * FROM genres;
+SELECT * FROM movies;
+INSERT INTO moviesgenres(MovieId, GenreId)
+values (5, 1), (5, 2), (5, 5), (5, 10),
+(6, 9),
+(7, 2), (7, 14), (7, 10), 
+(8, 4), (8, 7), (8, 12), (8, 15);
+SELECT * FROM moviesgenres; 
 
 
 
