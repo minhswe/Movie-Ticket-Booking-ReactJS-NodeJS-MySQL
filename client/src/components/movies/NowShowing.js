@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Card from "../cards/Card";
+import Card from "./MovieUtilities/Card";
 import axios from "../../api/axios";
 import "./NowShowingStyle.css";
 const NowShowing = (movie) => {
