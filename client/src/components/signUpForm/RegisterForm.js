@@ -15,9 +15,9 @@ function SignUpForm() {
     //Step 1: Add state for form fields
     const [formData, setFormData] = useState({
         Username: "",
-        Password: "",
+        UserPassword: "",
         Email: "",
-        Usertype: 0,
+        Usertype: 2,
     });
 
     // Step 2: Handle input change
@@ -86,10 +86,10 @@ function SignUpForm() {
                     />
                     <div className="register-title">Password</div>
                     <TextField
-                        name="Password"
+                        name="UserPassword"
                         type="password"
                         id="filled-basic"
-                        value={formData.Password}
+                        value={formData.UserPassword}
                         onChange={handleChange}
                         size="small"
                         variant="filled"

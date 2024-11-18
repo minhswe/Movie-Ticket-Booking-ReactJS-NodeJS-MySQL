@@ -1,48 +1,48 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../utilities/database");
 
-const Show = sequelize.define(
-    "Show",
+const Seat = sequelize.define(
+    "Seat",
     {
         Id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
+            allowNull: false,
             autoIncrement: true,
-            allowNull: false,
         },
-        ShowDate: {
-            type: DataTypes.DATEONLY,
-            allowNull: false,
+        SeatName: {
+            type: DataTypes.STRING(10),
+            allowNull: true,
         },
-        ShowTime: {
-            type: DataTypes.TIME,
-            allowNull: false,
+        SeatRow: {
+            type: DataTypes.CHAR(1),
+            allowNull: true,
         },
-        Price: {
-            type: DataTypes.DOUBLE,
-            allowNull: false,
+        SeatCol: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
         },
         HallId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
-                model: "Hall", // Assuming a Hall model exists
+                model: "Halls",
                 key: "Id",
             },
         },
-        MovieId: {
+        SeatTypeId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
-                model: "Movie", // Assuming a Movie model exists
+                model: "SeatTypes",
                 key: "Id",
             },
         },
     },
     {
-        tableName: "Shows",
+        tableName: "Seats",
         timestamps: false, // No createdAt/updatedAt fields
     }
 );
 
-module.exports = Show;
+module.exports = Seat;

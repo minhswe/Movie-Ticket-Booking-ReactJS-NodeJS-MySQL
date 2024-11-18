@@ -11,15 +11,15 @@ const Theater = sequelize.define(
             allowNull: false,
         },
         TheaterName: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.STRING(100),
             allowNull: false,
         },
-        TotalHall: {
+        NumberOfHall: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
         AddressId: {
-            type: DataTypes.STRING(100),
+            type: DataTypes.STRING(50),
             allowNull: false,
             references: {
                 model: "Addresses",

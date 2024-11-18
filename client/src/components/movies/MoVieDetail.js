@@ -10,7 +10,7 @@ import DialogActions from "@mui/material/DialogActions";
 import FormatReleaseDate from "../../utilities/FormatReleaseDate";
 import FormatGenres from "../../utilities/FormatGenres";
 import MovieBooking from "./MovieBooking";
-
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 const MoVieDetail = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const location = useLocation();
@@ -54,7 +54,7 @@ const MoVieDetail = () => {
                                 src={`${process.env.REACT_APP_API_URL}/${Movie.Poster}`}
                                 alt="Poster"
                             />
-                            <Button variant="contained">Booking</Button>
+                            <Button variant="contained"><KeyboardBackspaceIcon />another movie</Button>
                         </div>
                         <div className="detail-content">
                             <div className="detail-content-title">

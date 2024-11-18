@@ -41,7 +41,7 @@ const MovieShows = ({ selectedDate, movieId }) => {
                     ) : (
                         <div>
                             {shows.map((show, index) => (
-                                <ShowSection key={index} Show={show} />
+                                <ShowSection key={index} Show={show} movieId={movieId} />
                             ))}
                         </div>
                     )}

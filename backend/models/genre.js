@@ -11,7 +11,7 @@ const Genre = sequelize.define(
             allowNull: false,
         },
         GenreName: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.STRING(50),
             allowNull: false,
         },
     },

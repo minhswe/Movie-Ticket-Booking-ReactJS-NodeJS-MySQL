@@ -1,4 +1,3 @@
-const { Model, where } = require("sequelize");
 const Movie = require("../models/movie.js");
 const Genre = require("../models/genre.js");
 const MoviesGenres = require("../models/moviesgenres.js");
@@ -6,6 +5,8 @@ const Show = require("../models/show.js");
 const Hall = require("../models/hall.js");
 const Theater = require("../models/theater.js");
 const Address = require("../models/address.js");
+const Seat = require("../models/seat.js");
+const { where } = require("sequelize");
 
 Movie.belongsToMany(Genre, { through: MoviesGenres, foreignKey: "MovieId" });
 Genre.belongsToMany(Movie, { through: MoviesGenres, foreignKey: "GenreId" });
@@ -13,6 +14,7 @@ Show.belongsTo(Movie, { foreignKey: "MovieId", as: "Movie" });
 Show.belongsTo(Hall, { foreignKey: "HallId", as: "Hall" });
 Hall.belongsTo(Theater, { foreignKey: "TheaterId", as: "Theater" });
 Theater.belongsTo(Address, { foreignKey: "AddressId", as: "Address" });
+Seat.belongsTo(Hall, {foreignKey: "HallId", as: "Hall"});
 
 const getAllMovie = async (req, res) => {
     const statusId = req.query.movieStatusId;
@@ -58,7 +60,9 @@ const getShowByDate = async (req, res) => {
         const groupedShows = shows.reduce((result, show) => {
             const theater = show.Hall.Theater.TheaterName;
             const location = show.Hall.Theater.Address.AddressName;
+            const hallId = show.Hall.Id;
             const time = show.ShowTime;
+            const showId = show.Id;
 
             const existingEntry = result.find(
                 (entry) =>
@@ -66,12 +70,12 @@ const getShowByDate = async (req, res) => {
             );
 
             if (existingEntry) {
-                existingEntry.times.push(time);
+                existingEntry.times.push({time, hallId: hallId, showId: showId});
             } else {
                 result.push({
                     theater,
                     location,
-                    times: [time],
+                    times: [{time, hallId: hallId, showId: showId}],
                 });
             }
             return result;
@@ -86,7 +90,22 @@ const getShowByDate = async (req, res) => {
     }
 };
 
+const getSeats = async (req, res) => {
+    const { movieId, showId } = req.params;
+    const hallId = parseInt(req.query.hallId);
+    try{
+        const seats = await Seat.findAll({
+            where: {HallId: hallId},
+            attributes: ["Id", "SeatName"],
+        });
+        res.status(200).json(seats);
+    }catch (error) {
+
+    }
+}
+
 module.exports = {
     getAllMovie,
     getShowByDate,
+    getSeats
 };

@@ -26,7 +26,7 @@ const hashPassword = async (userPassword) => {
 const newUser = async (req, res) => {
     try {
         const { Username, Email, UserTypeID } = req.body;
-        const userPassword = req.body.Password;
+        const userPassword = req.body.UserPassword;
         const existingUser = await User.findOne({
             where: {
                 [Op.or]: [{ Username }, { Email }],
@@ -39,12 +39,12 @@ const newUser = async (req, res) => {
             });
         }
 
-        const userType = UserTypeID !== undefined ? UserTypeID : 0;
-        Password = await hashPassword(userPassword);
-        console.log("password: " + Password);
+        const userType = UserTypeID !== undefined ? UserTypeID : 2;
+        UserPassword = await hashPassword(userPassword);
+        console.log("password: " + UserPassword);
         const user = await User.create({
             Username,
-            Password,
+            UserPassword,
             Email,
             UserTypeID: userType,
         });
@@ -70,7 +70,7 @@ const checkUser = async (req, res) => {
         if (!user) {
             return res.status(401).json({message: "Invalid username or password"});
         }
-        const isPasswordValid = await bcrypt.compare(password, user.Password);
+        const isPasswordValid = await bcrypt.compare(password, user.UserPassword);
 
         if (isPasswordValid) {
             const token = jwt.sign(

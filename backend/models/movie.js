@@ -11,7 +11,7 @@ const Movie = sequelize.define(
             allowNull: false,
         },
         Title: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.STRING(100),
             allowNull: false,
         },
         RunningTime: {
@@ -23,7 +23,7 @@ const Movie = sequelize.define(
             allowNull: true,
         },
         Poster: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.STRING(100),
             allowNull: true,
         },
         ReleaseDate: {
@@ -31,7 +31,7 @@ const Movie = sequelize.define(
             allowNull: true,
         },
         Trailer: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.STRING(200),
             allowNull: true,
         },
         MovieStatusId: {

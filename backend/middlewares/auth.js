@@ -5,6 +5,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const auth = async (req, res, next) => {
+    if (req.header('Authorization') === null || req.header('Authorization') === undefined){
+        return res.status(401).json("Authorization is null or undefined");
+    } 
     const token = req.header('Authorization').replace('Bearer ', '').trim();
     const data = jwt.verify(token, process.env.SECRET_KEY);
     try{

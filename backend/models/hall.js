@@ -14,7 +14,7 @@ const Hall = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        TotalSeat: {
+        NumberOfSeat: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },

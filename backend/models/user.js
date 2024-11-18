@@ -5,16 +5,16 @@ const User = sequelize.define(
     "User",
     {
         Username: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.STRING(100),
             allowNull: false,
             primaryKey: true,
         },
-        Password: {
-            type: DataTypes.STRING(255),
+        UserPassword: {
+            type: DataTypes.STRING(1000),
             allowNull: false,
         },
         Email: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.STRING(200),
             allowNull: true,
         },
         UserTypeID: {
