@@ -14,10 +14,10 @@ import './App.css';
 const App = () => {
     
     return (
-        <div className="app-container">
+        // <div className="app-container">
             <Router basename="/">
                 <Header />
-                <div className="content">
+                {/* <div className="content"> */}
                     <Routes>
                         <Route element={<ProtectedRoutes />}>
                             <Route path="/user/profile" element={<Profile />} />
@@ -29,9 +29,9 @@ const App = () => {
                         <Route path="/movies/nowshowing" element={<NowShowing />} />
                         <Route path="/movie/:id" element={<MovieDetail />}></Route>
                     </Routes>
-                </div>
+                {/* </div> */}
             </Router>
-        </div>
+        // </div>
     );
 };
 

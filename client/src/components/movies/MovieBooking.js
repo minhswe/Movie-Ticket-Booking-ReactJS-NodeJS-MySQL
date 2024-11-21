@@ -16,7 +16,7 @@ export default function BasicDateCalendar({ Movie }) {
     return (
         <div className="movie-booking-container">
             <div className="booking-infor">
-                <MovieShows selectedDate={selectDate} movieId={Movie.Id}/>
+                <MovieShows selectedDate={selectDate} movieId={Movie.Id} Movie={Movie}/>
             </div>
             <div className="booking-calendar">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>

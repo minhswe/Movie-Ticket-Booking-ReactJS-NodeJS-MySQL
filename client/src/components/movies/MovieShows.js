@@ -3,7 +3,7 @@ import axios from "../../api/axios";
 import GradientCircularProgress from "./MovieUtilities/gradientCircularProgress";
 import "./MovieShows.css";
 import ShowSection from "./MovieUtilities/ShowSection";
-const MovieShows = ({ selectedDate, movieId }) => {
+const MovieShows = ({ selectedDate, movieId, Movie }) => {
     console.log(selectedDate, movieId);
     const [shows, setShows] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -41,7 +41,7 @@ const MovieShows = ({ selectedDate, movieId }) => {
                     ) : (
                         <div>
                             {shows.map((show, index) => (
-                                <ShowSection key={index} Show={show} movieId={movieId} />
+                                <ShowSection key={index} Show={show} movieId={movieId} Movie={Movie} />
                             ))}
                         </div>
                     )}

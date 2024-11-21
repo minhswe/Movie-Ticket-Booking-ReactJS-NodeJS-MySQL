@@ -4,11 +4,10 @@ import "./ShowSection.css";
 import "../../../api/axios";
 import { useNavigate } from "react-router-dom";
 
-const ShowSection = ({ Show, movieId }) => {
-    console.log(Show)
+const ShowSection = ({ Show, movieId, Movie }) => {
     const navigate = useNavigate();
-    const handleClick = (hallId, showId) => {
-        navigate(`/booking-ticket/movie/${movieId}/show/${showId}`, { state: { hallId, showId } });
+    const handleClick = (hallId, hallName, showId, showTime, showPrice) => {
+        navigate(`/booking-ticket/movie/${movieId}/show/${showId}`, { state: { hallId, hallName, showId, Movie, Show, showTime, showPrice} });
     } 
     return (
         <div className="show-section-container">
@@ -22,7 +21,7 @@ const ShowSection = ({ Show, movieId }) => {
                         key={index}
                         variant="contained"
                         sx={{ padding: "14px 10px", marginRight: "20px", width: "120px" }}
-                        onClick={() => handleClick(timeObject.hallId, timeObject.showId)}
+                        onClick={() => handleClick(timeObject.hallId, timeObject.hallName, timeObject.showId, timeObject.time, timeObject.showPrice)}
                     >
                         {timeObject.time}
                     </Button>

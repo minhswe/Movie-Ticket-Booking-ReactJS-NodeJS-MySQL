@@ -5,6 +5,7 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
+    /* background-color: rgb(38, 38, 38); */
 }
 
 /* Screen section styling */
@@ -17,7 +18,7 @@
 }
 
 .cinema-screen {
-    width: 50%;
+    width: 20%;
     height: 20px;
     background: linear-gradient(to bottom, #ccc, #999);
     border-radius: 10px;
@@ -37,22 +38,103 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    width: 80%;
 }
 
 .seat-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 15px;
+    gap: 5px;
     width: 60%;
+    height: 50%;
 }
 
 /* Individual row for seats */
 .seat-row {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 5px;
+}
+
+.cart-container {
+    color: #fff;
+    width: 60%;
+    height: 200px;
+    margin-top: 20px;
+    display: flex;
+    border: 1px solid black;
+    font-size: 15px;
+    position: relative;
+    background: #4a4a4a;
+    float: left;
+    padding: 35px 30px;
+    margin: 20px;
+    border: 4px dotted #fff;
+}
+
+.cart-container:after,
+.cart-container:before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    width: 15px;
+    height: 15px;
+    background: linear-gradient(#fff, #fff) padding-box, #4a4a4a;
+}
+.cart-container:after {
+    top: -5px;
+    left: -5px;
+    border-right: #fff 5px dotted;
+    border-bottom: #fff 5px dotted;
+    border-radius: 0 0 20px 0;
+}
+
+.cart-container:before {
+    top: -5px;
+    right: -5px;
+    border-left: #fff 5px dotted;
+    border-bottom: #fff 5px dotted;
+    border-radius: 0 0 0 20px;
+}
+
+
+.movie-information {
+    width: 40%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    /* border: 1px solid black; */
+}
+
+.movie-image {
+    height: 100%;
+    width: auto;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.show-information {
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.bill-information {
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.cart-button{
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 /* Responsive design */

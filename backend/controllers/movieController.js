@@ -6,6 +6,7 @@ const Hall = require("../models/hall.js");
 const Theater = require("../models/theater.js");
 const Address = require("../models/address.js");
 const Seat = require("../models/seat.js");
+const SeatType = require("../models/seattypes.js");
 const { where } = require("sequelize");
 
 Movie.belongsToMany(Genre, { through: MoviesGenres, foreignKey: "MovieId" });
@@ -15,6 +16,8 @@ Show.belongsTo(Hall, { foreignKey: "HallId", as: "Hall" });
 Hall.belongsTo(Theater, { foreignKey: "TheaterId", as: "Theater" });
 Theater.belongsTo(Address, { foreignKey: "AddressId", as: "Address" });
 Seat.belongsTo(Hall, {foreignKey: "HallId", as: "Hall"});
+Seat.belongsTo(SeatType, {foreignKey: "SeatTypeId", as: "SeatType"});
+SeatType.hasMany(Seat, { foreignKey: "SeatTypeId", as: "Seats" });
 
 const getAllMovie = async (req, res) => {
     const statusId = req.query.movieStatusId;
@@ -61,21 +64,22 @@ const getShowByDate = async (req, res) => {
             const theater = show.Hall.Theater.TheaterName;
             const location = show.Hall.Theater.Address.AddressName;
             const hallId = show.Hall.Id;
+            const hallName = show.Hall.HallNumber;
             const time = show.ShowTime;
             const showId = show.Id;
-
+            const showPrice = show.Price;
             const existingEntry = result.find(
                 (entry) =>
                     entry.theater === theater && entry.location === location
             );
 
             if (existingEntry) {
-                existingEntry.times.push({time, hallId: hallId, showId: showId});
+                existingEntry.times.push({time, hallId: hallId, hallName: hallName, showId: showId, showPrice: showPrice});
             } else {
                 result.push({
                     theater,
                     location,
-                    times: [{time, hallId: hallId, showId: showId}],
+                    times: [{time, hallId: hallId, hallName: hallName, showId: showId, showPrice: showPrice}],
                 });
             }
             return result;
@@ -97,8 +101,20 @@ const getSeats = async (req, res) => {
         const seats = await Seat.findAll({
             where: {HallId: hallId},
             attributes: ["Id", "SeatName"],
+            include: {
+                model: SeatType,
+                as: "SeatType",
+                attributes: ["TypeName", "Price"]
+            }
         });
-        res.status(200).json(seats);
+        const formattedSeat = seats.map((seat) => ({
+            Id: seat.Id,
+            SeatName: seat.SeatName,
+            TypeName: seat.SeatType.TypeName,
+            Price: seat.SeatType.Price
+        }));
+
+        res.status(200).json(formattedSeat);
     }catch (error) {
 
     }
