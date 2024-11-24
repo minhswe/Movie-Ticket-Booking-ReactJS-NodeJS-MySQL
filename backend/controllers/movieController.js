@@ -7,7 +7,9 @@ const Theater = require("../models/theater.js");
 const Address = require("../models/address.js");
 const Seat = require("../models/seat.js");
 const SeatType = require("../models/seattypes.js");
-const { where } = require("sequelize");
+const Food = require("../models/food.js")
+const Drink = require("../models/drink.js")
+
 
 Movie.belongsToMany(Genre, { through: MoviesGenres, foreignKey: "MovieId" });
 Genre.belongsToMany(Movie, { through: MoviesGenres, foreignKey: "GenreId" });
@@ -120,8 +122,21 @@ const getSeats = async (req, res) => {
     }
 }
 
+const getSnacks = async (req, res) => {
+    try{
+        const food = await Food.findAll();
+        const drink = await Drink.findAll();
+        const snacks = {food, drink};
+        res.status(200).json(snacks);
+    }catch (error){
+        console.error("Error fetching snacks:", error);
+        res.status(500).json({ error: "Failed to fetch snacks" });
+    }
+}
+
 module.exports = {
     getAllMovie,
     getShowByDate,
-    getSeats
+    getSeats,
+    getSnacks
 };

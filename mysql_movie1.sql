@@ -87,12 +87,14 @@ CREATE TABLE Shows (
 CREATE TABLE Food (
 	Id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     FoodName varchar(100),
+    Image varchar(100),
     Price DOUBLE
 );
 
 CREATE TABLE Drinks (
 	Id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     DrinkName varchar(50),
+     Image varchar(100),
     Price DOUBLE
 );
 
@@ -328,17 +330,17 @@ values (1, 1), (1, 2), (1, 5), (1, 10),
 
 INSERT INTO Shows(ShowDate, ShowTime, Price, HallId, MovieId)
 values ("2024-11-10", "19:30:00", 100000, 1, 1),
-("2024-11-20", "19:30:00", 100000, 2, 2),
-("2024-11-20", "22:30:00", 100000, 1, 1),
-("2024-11-20", "23:30:00", 100000, 2, 2),
-("2024-11-20", "19:30:00", 100000, 5, 1),
-("2024-11-20", "22:30:00", 100000, 5, 1),
-("2024-11-20", "19:30:00", 100000, 6, 2),
-("2024-11-20", "21:30:00", 100000, 6, 1),
-("2024-11-22", "19:30:00", 100000, 1, 2),
-("2024-11-23", "19:30:00", 100000, 2, 2),
-("2024-11-24", "19:30:00", 100000, 5, 1),
-("2024-11-25", "19:30:00", 100000, 6, 2);
+("2024-11-23", "19:30:00", 60000, 2, 2),
+("2024-11-23", "22:30:00", 60000, 1, 1),
+("2024-11-23", "23:30:00", 60000, 2, 2),
+("2024-11-23", "19:30:00", 60000, 5, 1),
+("2024-11-23", "22:30:00", 60000, 5, 1),
+("2024-11-23", "19:30:00", 60000, 6, 2),
+("2024-11-23", "21:30:00", 60000, 6, 1),
+("2024-11-24", "19:30:00", 60000, 1, 2),
+("2024-11-24", "19:30:00", 60000, 2, 2),
+("2024-11-25", "19:30:00", 60000, 5, 1),
+("2024-11-26", "19:30:00", 60000, 6, 2);
 
 insert into usertypes(RoleName) values ("Admin"), ("Regular User");
 
@@ -404,4 +406,15 @@ CALL GenerateSeats(16, 80);
 
 select * from seats;
 
+select * from food;
 
+insert into food(FoodName, Image, Price) 
+values ('Small Popcorn', "/posters/popcorn_s.png", 30000),
+('Medium Popcorn', "/posters/popcorn_m.png", 40000),
+('Large Popcorn', "/posters/popcorn_l.png", 50000);
+
+select * from drinks;
+
+insert into drinks(DrinkName, Image, Price)
+values ("Pepsi 200ml", "/posters/pepsi.png", 20000),
+("Coke 200ml", "/posters/coke.png", 20000);

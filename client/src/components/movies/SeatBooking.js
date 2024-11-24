@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
-import axios from "../../api/axios";
-import { useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import Button from "@mui/material/Button";
 import "./SeatBooking.css";
 import { styled } from "@mui/material";
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ComBoDialog from "./MovieUtilities/ComboDialog";
 
-const SeatBooking = () => {
+
+const SeatBooking = ({
+    selectedSeat,
+    setSelectedSeat,
+    groupedSeats,
+    setGroupedSeats,
+    ticketPrice,
+    setTicketPrice,
+}) => {
 
     const StyledButton = styled(Button)(({ theme, typeName }) => ({
-        width: "20px", // Set width
-        height: "40px", // Set height (same as width for a square)
-        borderRadius: "4px", // Slight rounding for the square effect
-        fontSize: "12px", // Smaller font for seat labels
+        width: "20px",
+        height: "40px", 
+        borderRadius: "4px",
+        fontSize: "12px",
         textTransform: "none",
         color: theme.palette.text.primary,
         borderColor: theme.palette.primary.main,
@@ -24,71 +27,24 @@ const SeatBooking = () => {
             backgroundColor: typeName === "VIP" ? theme.palette.error.dark : theme.palette.info.dark,
         },
         "&.selected": {
-            backgroundColor: "rgba(212, 42, 135, 1)", // Selected background color
-            borderColor: "rgba(255, 255, 255, 1)", // Selected border color
-            color: "rgba(255, 255, 255, 1)", // Selected text color
+            backgroundColor: "rgba(212, 42, 135, 1)",
+            borderColor: "rgba(255, 255, 255, 1)",
+            color: "rgba(255, 255, 255, 1)",
         },
     }));
-    const [selectedSeat, setSelectedSeat] = useState([]);
-    const [groupedSeats, setGroupedSeats] = useState({});
-    const [totalPrice, setTotalPrice] = useState(0);
-    const [isComBoDialogOpen, setIsComboDialogOpen] = useState(false);
-    const location = useLocation();
-    const { hallId, hallName, Movie, Show,  showTime, showPrice} = location.state || {};
-    const { movieId, showId} = useParams();
-    console.log(Show)
-    console.log(movieId, showId);
-    useEffect(() => {
-        const fetchSeatsForHall = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                const response = await axios.get(
-                    `movies/movie/${movieId}/show/${showId}/seats`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                        params: {
-                            hallId: hallId,
-                        },
-                    }
-                );
-                console.log(response.data);
-                const seatsData = response.data;
-                const grouped = seatsData.reduce((acc, seat) => {
-                    const row = seat.SeatName[0];
-                    if (!acc[row]){
-                        acc[row] = [];
-                    }
-                    acc[row].push(seat);
-                    return acc;
-                }, {});
+    
 
-                setGroupedSeats(grouped);
-            } catch (error) {}
-        };
-        fetchSeatsForHall();
-    }, [movieId, hallId, showId]);
-
-    const handleSelectedSeat = (seatId, seatPrice) => {
+    const handleSelectedSeat = (seatId, seatName,seatPrice) => {
         setSelectedSeat((previousSelectedSeat) => {
-            const isAlreadySelected = previousSelectedSeat.includes(seatId);
+            const isAlreadySelected = previousSelectedSeat.some((seat => seat.seatId === seatId));
             if (isAlreadySelected){
-                setTotalPrice((prevTotal) => prevTotal - seatPrice);
-                return previousSelectedSeat.filter((id) => id != seatId)
+                setTicketPrice((prevTotal) => prevTotal - seatPrice);
+                return previousSelectedSeat.filter((seat) => seat.seatId !== seatId);
             }else {
-                setTotalPrice((prevTotal) => prevTotal + seatPrice);
-                return [...previousSelectedSeat, seatId];
+                setTicketPrice((prevTotal) => prevTotal + seatPrice);
+                return [...previousSelectedSeat, {seatId, seatName}];
             }
         })
-    }
-
-    const handleComboDialog = () => {
-        setIsComboDialogOpen(true);
-    }
-
-    const handleCloseComboDialog = () => {
-        setIsComboDialogOpen(false);
     }
 
     return (
@@ -107,10 +63,10 @@ const SeatBooking = () => {
                                 {groupedSeats[row].map((seat) => (
                                     <StyledButton
                                         key={seat.Id}
-                                        className={selectedSeat.includes(seat.Id) ? "selected" : ""}
+                                        className={selectedSeat.some((selected) => selected.seatId === seat.Id) ? "selected" : ""}
                                         typeName = {seat.TypeName}
                                         variant="outlined"
-                                        onClick={() => handleSelectedSeat(seat.Id, seat.Price)}
+                                        onClick={() => handleSelectedSeat(seat.Id, seat.SeatName ,seat.Price)}
                                     >
                                         {seat.SeatName}
                                     </StyledButton>
@@ -119,31 +75,8 @@ const SeatBooking = () => {
                         ))}
                     </div>
                 )}
-                <div className="cart-container">
-                    <div className="movie-information">
-                        <div className="movie-image">
-                            <img  src={`${process.env.REACT_APP_API_URL}/${Movie.Poster}`} alt="" />
-                        </div>
-                        <div className="movie-detail">
-                            <span>Movie Name: {Movie.Title}</span>
-                        </div>
-                    </div>
-                    <div className="show-information">
-                        <span>Cinema: {Show.theater}</span>
-                        <span>Show Time: {showTime}</span>
-                        <span>Hall: {hallName}</span>
-                    </div>
-                    <div className="bill-information">
-                        <span>Ticket: {totalPrice + (selectedSeat.length * showPrice)}</span>
-                        <span>Combo: </span>
-                        <span>Total: </span>
-                    </div>
-                    <div className="cart-button">
-                        <Button variant="contained" onClick={handleComboDialog}>Continue <ArrowForwardIcon /></Button>
-                    </div>
-                </div>
+            
             </div>
-            <ComBoDialog open={isComBoDialogOpen} onClose={handleCloseComboDialog} />
         </div>
     );
 };

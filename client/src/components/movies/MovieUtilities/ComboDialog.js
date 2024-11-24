@@ -7,25 +7,37 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import ComboCard from "./ComboCard";
+import axios from "../../../api/axios";
 
-export default function ResponsiveDialog({open, onClose}) {
-    // const [open, setOpen] = React.useState(false);
+export default function ResponsiveDialog({ open, onClose }) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-    // const handleClickOpen = () => {
-    //     setOpen(true);
-    // };
-
-    // const handleClose = () => {
-    //     setOpen(false);
-    // };
-
+    const [snacks, setSnacks] = React.useState({ food: [], drink: [] });
+    const [loading, setLoading] = React.useState(false);
+    const [error, setError] = React.useState(null);
+    React.useEffect(() => {
+        if (open) {
+            const fetchSnacks = async () => {
+                setLoading(true);
+                setError(null);
+                try {
+                    const response = await axios.get("movies/snacks");
+                    console.log(response.data);
+                    setSnacks(response.data);
+                } catch (error) {
+                    console.error("Failed to fetch snacks:", error);
+                    setError("Failed to load snack data.");
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchSnacks();
+        }
+    }, [open]);
     return (
         <React.Fragment>
-            <Button variant="outlined" >
-                Open responsive dialog
-            </Button>
             <Dialog
                 fullScreen={fullScreen}
                 open={open}
@@ -33,21 +45,26 @@ export default function ResponsiveDialog({open, onClose}) {
                 aria-labelledby="responsive-dialog-title"
             >
                 <DialogTitle id="responsive-dialog-title">
-                    {"Use Google's location service?"}
+                    Snack bar
                 </DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        Let Google help apps determine location. This means
-                        sending anonymous location data to Google, even when no
-                        apps are running.
-                    </DialogContentText>
+                    {!loading && !error && (
+                        <div>
+                            {snacks.food.map((item) => (
+                                <ComboCard key={item.Id} Name={item.FoodName} image={item.Image} price={item.Price} />
+                            ))}
+                            {snacks.drink.map((item) => (
+                                <ComboCard key={item.Id} Name={item.DrinkName} image={item.Image} price={item.Price}/>
+                            ))}
+                        </div>
+                    )}
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={onClose}>
+                    {/* <Button autoFocus onClick={onClose} variant="contained">
                         Disagree
-                    </Button>
-                    <Button onClick={onClose} autoFocus>
-                        Agree
+                    </Button> */}
+                    <Button onClick={onClose} variant="contained" autoFocus>
+                        Continue
                     </Button>
                 </DialogActions>
             </Dialog>

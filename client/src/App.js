@@ -9,6 +9,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NowShowing from "./components/movies/NowShowing";
 import MovieDetail from "./components/movies/MoVieDetail";
 import SeatBooking from "./components/movies/SeatBooking";
+import Booking from "./components/movies/Booking";
 import './App.css';
 
 const App = () => {
@@ -21,7 +22,7 @@ const App = () => {
                     <Routes>
                         <Route element={<ProtectedRoutes />}>
                             <Route path="/user/profile" element={<Profile />} />
-                            <Route path="booking-ticket/movie/:movieId/show/:showId" element={<SeatBooking />} />
+                            <Route path="booking-ticket/movie/:movieId/show/:showId" element={<Booking />} />
                         </Route>
                         <Route path="/" element={<Home />} />
                         <Route path="/user/register" element={<RegisterForm />} />

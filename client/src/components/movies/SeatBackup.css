@@ -18,7 +18,7 @@
 }
 
 .cinema-screen {
-    width: 50%;
+    width: 20%;
     height: 20px;
     background: linear-gradient(to bottom, #ccc, #999);
     border-radius: 10px;
@@ -38,7 +38,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    width: 80%;
 }
 
 .seat-container {
@@ -46,7 +46,7 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 5px;
-    width: 100%;
+    width: 60%;
     height: 50%;
 }
 
@@ -129,6 +129,12 @@
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+}
+
+.cart-button{
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 /* Responsive design */

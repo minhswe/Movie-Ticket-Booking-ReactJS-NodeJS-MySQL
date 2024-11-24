@@ -1,0 +1,22 @@
+.booking-container{
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    border: 1px solid black;
+}
+
+.stepper-wrapper{
+    width: 60%;
+}
+
+.step-content {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9; 
+    border-radius: 8px;
+}
