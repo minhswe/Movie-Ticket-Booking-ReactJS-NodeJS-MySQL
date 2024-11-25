@@ -42,7 +42,7 @@ const SeatBooking = ({
                 return previousSelectedSeat.filter((seat) => seat.seatId !== seatId);
             }else {
                 setTicketPrice((prevTotal) => prevTotal + seatPrice);
-                return [...previousSelectedSeat, {seatId, seatName}];
+                return [...previousSelectedSeat, {seatId, seatName, seatPrice}];
             }
         })
     }

@@ -9,17 +9,6 @@ const auth = async (req, res, next) => {
         return res.status(401).json("Authorization is null or undefined");
     }
     const token = req.header('Authorization').replace('Bearer ', '').trim();
-    // let data;
-    // try {
-    //     // Wrap jwt.verify in a try-catch to handle errors
-    //     data = jwt.verify(token, process.env.SECRET_KEY);
-    // } catch (error) {
-    //     // Handle specific JWT errors
-    //     if (error.name === 'TokenExpiredError') {
-    //         return res.status(401).json({ message: 'Token has expired', expiredAt: error.expiredAt });
-    //     }
-    //     return res.status(401).json({ message: 'Invalid token or not authorized' });
-    // }
     try{
         const data = jwt.verify(token, process.env.SECRET_KEY);
         const user = await User.findOne({where: {Username: data.username}});

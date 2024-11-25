@@ -12,8 +12,8 @@ import axios from "../../api/axios";
 import Snacks from "./Snacks";
 import Slide from "@mui/material/Slide";
 import Zoom from "@mui/material/Zoom";
-
-const steps = ["Seat booking", "Snacks", "Payment"];
+import OrderConfirmation from "./OrderConfirmation";
+const steps = ["Seat booking", "Snacks", "Order confirmation"];
 const Booking = () => {
     const [activeStep, setActiveStep] = React.useState(0);
     const [skipped, setSkipped] = React.useState(new Set());
@@ -30,6 +30,8 @@ const Booking = () => {
         return skipped.has(step);
     };
 
+    
+
     // const handleNext = () => {
     //     setChecked(true);
     //     let newSkipped = skipped;
@@ -44,33 +46,22 @@ const Booking = () => {
     // };
 
     const handleNext = () => {
-        setChecked(false);
-        setDirection("left");
-        setChecked(true);
-        setActiveStep((prevStep) => {
-            return prevStep + 1;
-        });
+        setChecked(false); // Start unmount animation
+        setTimeout(() => {
+            setDirection("left"); // Set direction for the next animation
+            setActiveStep((prevStep) => prevStep + 1);
+            setChecked(true); // Remount the new step
+        }, 500); // Match the timeout duration of the `Slide` component
     };
 
     const handleBack = () => {
-        setChecked(false);
-        setDirection("right");
-        setActiveStep((prevStep) => {
-            return prevStep - 1;
-        });
-        setChecked(true);
+        setChecked(false); // Start unmount animation
+        setTimeout(() => {
+            setDirection("right"); // Set direction for the next animation
+            setActiveStep((prevStep) => prevStep - 1);
+            setChecked(true); // Remount the new step
+        }, 500); // Match the timeout duration of the `Slide` component
     };
-
-    React.useEffect(() => {
-        // Initially set the transition to true
-        console.log("checked: ", checked);
-        setChecked(true);
-    }, []);
-
-    // const handleBack = () => {
-    //     setDirection("right");
-    //     setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    // };
 
     const handleSkip = () => {
         if (!isStepOptional(activeStep)) {
@@ -133,33 +124,87 @@ const Booking = () => {
             } catch (error) {}
         };
         fetchSeatsForHall();
-        console.log(selectedSeat, selectedSnacks)
+        console.log(selectedSeat, selectedSnacks);
     }, [movieId, hallId, showId, selectedSeat, selectedSnacks]);
+
+    // useEffect(() => {
+    //     // setChecked(true);
+    //     setTimeout(() => {
+    //         setChecked(true);
+    //     }, 500);
+
+    //     console.log("checked",checked);
+    //     // return() => setChecked(false);
+    //     // console.log("checked",checked);
+    // }, [checked])
 
     const renderStepContent = (step) => {
         switch (step) {
             case 0:
                 return (
                     <React.Fragment>
-                        <SeatBooking
-                            selectedSeat={selectedSeat}
-                            setSelectedSeat={setSelectedSeat}
-                            groupedSeats={groupedSeats}
-                            setGroupedSeats={setGroupedSeats}
-                            ticketPrice={ticketPrice}
-                            setTicketPrice={setTicketPrice}
-                        />
+                        <Slide
+                            direction={direction}
+                            in={checked}
+                            timeout={500}
+                            mountOnEnter
+                            unmountOnExit
+                        >
+                            <div>
+                                <SeatBooking
+                                    selectedSeat={selectedSeat}
+                                    setSelectedSeat={setSelectedSeat}
+                                    groupedSeats={groupedSeats}
+                                    setGroupedSeats={setGroupedSeats}
+                                    ticketPrice={ticketPrice}
+                                    setTicketPrice={setTicketPrice}
+                                />
+                            </div>
+                        </Slide>
                     </React.Fragment>
                 );
             case 1:
                 return (
                     <React.Fragment>
-                        <Snacks
-                            comboPrice={comboPrice}
-                            setComboPrice={setComboPrice}
-                            selectedSnacks={selectedSnacks}
-                            setSelectedSnacks={setSelectedSnacks}
-                        />
+                        <Slide
+                            direction={direction}
+                            in={checked}
+                            timeout={500}
+                            mountOnEnter
+                            unmountOnExit
+                        >
+                            <div>
+                                <Snacks
+                                    comboPrice={comboPrice}
+                                    setComboPrice={setComboPrice}
+                                    selectedSnacks={selectedSnacks}
+                                    setSelectedSnacks={setSelectedSnacks}
+                                />
+                            </div>
+                        </Slide>
+                    </React.Fragment>
+                );
+            case 2:
+                return (
+                    <React.Fragment>
+                        <Slide
+                            direction={direction}
+                            in={checked}
+                            timeout={500}
+                            mountOnEnter
+                            unmountOnExit
+                        >
+                            <div>
+                                <OrderConfirmation
+                                    selectedSeat={selectedSeat}
+                                    selectedSnacks={selectedSnacks} 
+                                    showPrice={showPrice}
+                                    total={ticketPrice +
+                                        selectedSeat.length * showPrice +
+                                        comboPrice}
+                                />
+                            </div>
+                        </Slide>
                     </React.Fragment>
                 );
             default:
@@ -219,17 +264,17 @@ const Booking = () => {
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
-                            <Slide
+                            {/* <Slide
                                 direction={direction}
                                 in={checked}
                                 timeout={500}
                                 mountOnEnter
                                 unmountOnExit
-                            >
-                                <div className="step-content">
-                                    {renderStepContent(activeStep)}
-                                </div>
-                            </Slide>
+                            > */}
+                            <div className="step-content">
+                                {renderStepContent(activeStep)}
+                            </div>
+                            {/* </Slide> */}
                             <Box
                                 sx={{
                                     display: "flex",

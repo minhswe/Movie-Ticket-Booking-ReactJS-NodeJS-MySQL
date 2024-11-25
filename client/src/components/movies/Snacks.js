@@ -31,7 +31,7 @@ const Snacks = ({comboPrice, setComboPrice, selectedSnacks, setSelectedSnacks}) 
             if (quantity === 0){
                 delete updatedItems[itemId];
             } else {
-                updatedItems[itemId] = {itemName, price, quantity}
+                updatedItems[itemId] = {itemId ,itemName, price, quantity}
             }
             return updatedItems;
         });
@@ -51,7 +51,7 @@ const Snacks = ({comboPrice, setComboPrice, selectedSnacks, setSelectedSnacks}) 
                     Name={item.FoodName}
                     image={item.Image}
                     price={item.Price}
-                    onQuantityChange={(quantity) => 
+                    onQuantityChange={(quantity) =>
                         updateQuantity(item.Id, item.FoodName, item.Price, quantity)
                     }
                 />
@@ -63,7 +63,7 @@ const Snacks = ({comboPrice, setComboPrice, selectedSnacks, setSelectedSnacks}) 
                     image={item.Image}
                     price={item.Price}
                     onQuantityChange={(quantity) => 
-                        updateQuantity(item.Id, item.FoodName, item.Price, quantity)
+                        updateQuantity(item.Id, item.DrinkName, item.Price, quantity)
                     }
                 />
             ))}
