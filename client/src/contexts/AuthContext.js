@@ -15,8 +15,23 @@ export function AuthProvider(props) {
         if (token) {
             try {
                 const decoded = jwtDecode(token);
-                setAuthUser(decoded.username);
-                setIsSignedIn(true);
+                const currentTime = Math.floor(Date.now() / 1000);
+                if (decoded.exp > currentTime){
+                    setAuthUser(decoded.username);
+                    setIsSignedIn(true);
+                    scheduleTokenExpiry(decoded.exp - currentTime);
+                    const hours = Math.floor((decoded.exp - currentTime) / 3600);
+                    const minutes = Math.floor(((decoded.exp - currentTime)% 3600) / 60);
+                    const seconds = (decoded.exp - currentTime) % 60;
+            
+                    console.log(
+                        `Token expires in: ${hours.toString().padStart(2, '0')}h:${minutes
+                            .toString()
+                            .padStart(2, '0')}m:${seconds.toString().padStart(2, '0')}s`
+                    );
+                } else {
+                    signOut();
+                }
             } catch (error) {
                 console.log("Failed to decode token:", error);
                 setIsSignedIn(false);
@@ -24,15 +39,28 @@ export function AuthProvider(props) {
         }
     }, []);
 
+    const scheduleTokenExpiry = (timeUnitExpiry) => {
+        setTimeout(() => {
+            console.log("Token expired, logging out...");
+            signOut();
+        }, timeUnitExpiry * 1000); // Convert seconds to milliseconds
+    }
+
     const getToken = () => {
         return localStorage.getItem("token");
     }
     const signIn = (token) => {
         try {
             const decoded = jwtDecode(token);
-            setAuthUser(decoded.username);
-            setIsSignedIn(true);
-            localStorage.setItem("token", token);
+            const currentTime = Math.floor(Date.now() / 1000);
+            if (decoded.exp > currentTime){
+                setAuthUser(decoded.username);
+                setIsSignedIn(true);
+                localStorage.setItem("token", token);
+                scheduleTokenExpiry(decoded.exp - currentTime)
+            } else {
+                console.log("Token is already expired");
+            }
         } catch (error) {
             console.log("Failed to decode token:", error);
         }
