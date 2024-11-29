@@ -49,6 +49,7 @@ export function AuthProvider(props) {
     const getToken = () => {
         return localStorage.getItem("token");
     }
+    
     const signIn = (token) => {
         try {
             const decoded = jwtDecode(token);

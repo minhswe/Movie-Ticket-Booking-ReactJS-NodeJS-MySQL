@@ -2,7 +2,7 @@ import React from "react";
 import ComboCard from "./MovieUtilities/ComboCard"
 import axios from "../../api/axios"
 const Snacks = ({comboPrice, setComboPrice, selectedSnacks, setSelectedSnacks}) => {
-    const [snacks, setSnacks] = React.useState({ food: [], drink: [] });
+    const [snacks, setSnacks] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState(null);
 
@@ -45,25 +45,14 @@ const Snacks = ({comboPrice, setComboPrice, selectedSnacks, setSelectedSnacks}) 
     }, [selectedSnacks, setComboPrice]);
     return (
         <div>
-            {snacks.food.map((item) => (
+            {snacks.map((snack) => (
                 <ComboCard
-                    key={item.Id}
-                    Name={item.FoodName}
-                    image={item.Image}
-                    price={item.Price}
+                    key={snack.Id}
+                    Name={snack.ItemName}
+                    image={snack.Image}
+                    price={snack.Price}
                     onQuantityChange={(quantity) =>
-                        updateQuantity(item.Id, item.FoodName, item.Price, quantity)
-                    }
-                />
-            ))}
-            {snacks.drink.map((item) => (
-                <ComboCard
-                    key={item.Id}
-                    Name={item.DrinkName}
-                    image={item.Image}
-                    price={item.Price}
-                    onQuantityChange={(quantity) => 
-                        updateQuantity(item.Id, item.DrinkName, item.Price, quantity)
+                        updateQuantity(snack.Id, snack.ItemName, snack.Price, quantity)
                     }
                 />
             ))}

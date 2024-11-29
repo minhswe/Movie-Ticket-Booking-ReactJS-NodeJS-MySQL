@@ -13,15 +13,16 @@ import Snacks from "./Snacks";
 import Slide from "@mui/material/Slide";
 import Zoom from "@mui/material/Zoom";
 import OrderConfirmation from "./OrderConfirmation";
+import CheckUser from "../../utilities/CheckUser";
+
 const steps = ["Seat booking", "Snacks", "Order confirmation"];
+
 const Booking = () => {
     const [activeStep, setActiveStep] = React.useState(0);
     const [skipped, setSkipped] = React.useState(new Set());
     const [direction, setDirection] = useState("left");
     const [checked, setChecked] = useState(true);
-    const handleSlide = () => {
-        setChecked(!checked);
-    };
+
     const isStepOptional = (step) => {
         return step === 1;
     };
@@ -29,8 +30,6 @@ const Booking = () => {
     const isStepSkipped = (step) => {
         return skipped.has(step);
     };
-
-    
 
     // const handleNext = () => {
     //     setChecked(true);
@@ -87,11 +86,115 @@ const Booking = () => {
     const [ticketPrice, setTicketPrice] = useState(0);
     const [comboPrice, setComboPrice] = useState(0);
     const [selectedSnacks, setSelectedSnacks] = React.useState({});
-
+    const [totalPrice, setTotalPrice] = useState(0);
     const location = useLocation();
+
     const { hallId, hallName, Movie, Show, showTime, showPrice } =
         location.state || {};
+
     const { movieId, showId } = useParams();
+
+    const fetchShowBookingId = async () => {
+        try {
+            const response = await axios.get("/booking/getShowBookingId");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching the ShowBooking ID count:", error);
+        }
+    };
+
+    const sendShowBookingData = async (
+        numberOfSeat,
+        totalPrice,
+        username,
+        showId
+    ) => {
+        try {
+            const response = await axios.post("/booking/addShowBooking", {
+                numberOfSeat,
+                totalPrice,
+                username,
+                showId,
+            });
+            console.log("Booking data sent successfully:", response.data);
+        } catch (error) {
+            console.error("Error sending booking data:", error);
+        }
+    };
+
+    const sendSeatBookingData = async (
+        username,
+        price,
+        seatId,
+        showBookingId
+    ) => {
+        try {
+            const response = await axios.post("/booking/addSeatBooking", {
+                username,
+                price,
+                seatId,
+                showBookingId,
+            });
+            console.log("Seat booking data sent successfully:", response.data);
+        } catch (error) {
+            console.error("Error sending seat booking data:", error);
+        }
+    };
+
+    const sendSnackBookingData = async (username, price, itemId, quantity, showBookingId) => {
+        try {
+            const response = await axios.post("/booking/addSnackBooking", {
+                username,
+                price,
+                itemId,
+                quantity,
+                showBookingId
+            });
+            console.log("Snack booking data sent successfully:", response.data);
+        } catch (error) {
+            console.error("Error sending snack booking data:", error);
+        }
+    }
+
+    const holdSeatForShow = async (username ,showId, seatId) => {
+        try {
+            const response = await axios.post("/booking/holdSeatForShow", {
+                username,
+                showId,
+                seatId
+            });
+            console.log("Hold seat for show data sent successfully:", response.data);
+        } catch (error) {
+            console.error("Error holding seat for show:", error);
+        }
+    };
+
+    const handleFinish = async () => {
+        if (selectedSeat.length <= 0) return;
+        console.log(`handle finish: ${selectedSeat.length}, ${totalPrice}`);
+        const token = localStorage.getItem("token");
+        const user = await CheckUser(token);
+        const showBookingId = await fetchShowBookingId();
+        const numberOfSeat = selectedSeat.length;
+        const username = user.username;
+
+        sendShowBookingData(numberOfSeat, totalPrice, username, showId);
+        selectedSeat.forEach((seat) => {
+            sendSeatBookingData(username, ticketPrice + showPrice, seat.seatId, showBookingId);
+            holdSeatForShow(username, showId, seat.seatId);
+        });
+
+        if (selectedSnacks && Object.keys(selectedSnacks).length > 0) {
+            Object.values(selectedSnacks).forEach((snack) => {
+                if (snack.price && snack.quantity && snack.itemId) {
+                    const price = snack.price * snack.quantity;
+                    sendSnackBookingData(username, price, snack.itemId, snack.quantity, showBookingId);
+                } else {
+                    console.error("Invalid snack data:", snack);
+                }
+            });
+        };
+    };
     // console.log(Show);
     // console.log(movieId, showId);
     useEffect(() => {
@@ -127,16 +230,11 @@ const Booking = () => {
         console.log(selectedSeat, selectedSnacks);
     }, [movieId, hallId, showId, selectedSeat, selectedSnacks]);
 
-    // useEffect(() => {
-    //     // setChecked(true);
-    //     setTimeout(() => {
-    //         setChecked(true);
-    //     }, 500);
-
-    //     console.log("checked",checked);
-    //     // return() => setChecked(false);
-    //     // console.log("checked",checked);
-    // }, [checked])
+    useEffect(() => {
+        setTotalPrice(
+            ticketPrice + selectedSeat.length * showPrice + comboPrice
+        );
+    }, [ticketPrice, comboPrice]);
 
     const renderStepContent = (step) => {
         switch (step) {
@@ -158,6 +256,7 @@ const Booking = () => {
                                     setGroupedSeats={setGroupedSeats}
                                     ticketPrice={ticketPrice}
                                     setTicketPrice={setTicketPrice}
+                                    showId={showId}
                                 />
                             </div>
                         </Slide>
@@ -197,11 +296,13 @@ const Booking = () => {
                             <div>
                                 <OrderConfirmation
                                     selectedSeat={selectedSeat}
-                                    selectedSnacks={selectedSnacks} 
+                                    selectedSnacks={selectedSnacks}
                                     showPrice={showPrice}
-                                    total={ticketPrice +
+                                    total={
+                                        ticketPrice +
                                         selectedSeat.length * showPrice +
-                                        comboPrice}
+                                        comboPrice
+                                    }
                                 />
                             </div>
                         </Slide>
@@ -264,17 +365,9 @@ const Booking = () => {
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
-                            {/* <Slide
-                                direction={direction}
-                                in={checked}
-                                timeout={500}
-                                mountOnEnter
-                                unmountOnExit
-                            > */}
                             <div className="step-content">
                                 {renderStepContent(activeStep)}
                             </div>
-                            {/* </Slide> */}
                             <Box
                                 sx={{
                                     display: "flex",
@@ -282,7 +375,7 @@ const Booking = () => {
                                     pt: 2,
                                 }}
                             >
-                                <Button
+                                <Button variant="contained"
                                     color="inherit"
                                     disabled={activeStep === 0}
                                     onClick={handleBack}
@@ -292,7 +385,7 @@ const Booking = () => {
                                 </Button>
                                 <Box sx={{ flex: "1 1 auto" }} />
                                 {isStepOptional(activeStep) && (
-                                    <Button
+                                    <Button variant="outlined"
                                         color="inherit"
                                         onClick={handleSkip}
                                         sx={{ mr: 1 }}
@@ -300,7 +393,13 @@ const Booking = () => {
                                         Skip
                                     </Button>
                                 )}
-                                <Button onClick={handleNext}>
+                                <Button variant="contained"
+                                    onClick={
+                                        activeStep === steps.length - 1
+                                            ? handleFinish
+                                            : handleNext
+                                    }
+                                >
                                     {activeStep === steps.length - 1
                                         ? "Finish"
                                         : "Next"}

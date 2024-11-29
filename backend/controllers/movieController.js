@@ -7,8 +7,7 @@ const Theater = require("../models/theater.js");
 const Address = require("../models/address.js");
 const Seat = require("../models/seat.js");
 const SeatType = require("../models/seattypes.js");
-const Food = require("../models/food.js")
-const Drink = require("../models/drink.js")
+const Snack = require("../models/snack.js");
 
 
 Movie.belongsToMany(Genre, { through: MoviesGenres, foreignKey: "MovieId" });
@@ -124,9 +123,7 @@ const getSeats = async (req, res) => {
 
 const getSnacks = async (req, res) => {
     try{
-        const food = await Food.findAll();
-        const drink = await Drink.findAll();
-        const snacks = {food, drink};
+        const snacks = await Snack.findAll();
         res.status(200).json(snacks);
     }catch (error){
         console.error("Error fetching snacks:", error);

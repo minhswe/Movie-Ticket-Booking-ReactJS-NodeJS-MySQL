@@ -84,17 +84,10 @@ CREATE TABLE Shows (
     MovieId INT
 );
 
-CREATE TABLE Food (
+CREATE TABLE Snacks (
 	Id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    FoodName varchar(100),
-    Image varchar(100),
-    Price DOUBLE
-);
-
-CREATE TABLE Drinks (
-	Id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    DrinkName varchar(50),
-     Image varchar(100),
+    ItemName varchar(50),
+	Image varchar(100),
     Price DOUBLE
 );
 
@@ -109,29 +102,25 @@ CREATE TABLE ShowBookings (
 CREATE TABLE SeatBookings (
 	Id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     Username varchar(100),
+    Price DOUBLE,
     SeatId INT,
     ShowBookingId INT
 );
 
 CREATE TABLE ShowsSeatsNotAvailability (
     Id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	Username varchar(100),
     ShowId INT NOT NULL,
     SeatId INT NOT NULL,
     IsAvailable BOOLEAN DEFAULT FALSE
 );
 
-
-CREATE TABLE FoodBookings (
-	Id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	Username varchar(100),
-    FoodId INT,
-    ShowBookingId INT
-);
-
-CREATE TABLE DrinkBookings (
+CREATE TABLE SnackBookings (
 	Id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     Username varchar(100),
-    DrinkId INT,
+	Price DOUBLE,
+    ItemId INT,
+    Quantity INT,
     ShowBookingId INT
 );
 
@@ -195,29 +184,34 @@ ADD CONSTRAINT FK_SeatBooking_Seat FOREIGN KEY (SeatId) REFERENCES Seats(Id);
 ALTER TABLE SeatBookings
 ADD CONSTRAINT FK_SeatBooking_ShowBooking FOREIGN KEY (ShowBookingId) REFERENCES ShowBookings(Id);
 
--- FoodBookings -> Users
-ALTER TABLE FoodBookings
-ADD CONSTRAINT FK_FoodBooking_User FOREIGN KEY (Username) REFERENCES Users(Username);
+ALTER TABLE SnackBookings
+ADD CONSTRAINT FK_SnackBooking_User FOREIGN KEY (Username) REFERENCES Users(Username);
 
--- FoodBookings -> Food
-ALTER TABLE FoodBookings
-ADD CONSTRAINT FK_FoodBooking_Food FOREIGN KEY (FoodId) REFERENCES Food(Id);
+ALTER TABLE SnackBookings
+ADD CONSTRAINT FK_SnackBooking_ShowBooking FOREIGN KEY (ShowBookingId) REFERENCES ShowBookings(Id);
+-- FoodBookings -> Users
+-- ALTER TABLE FoodBookings
+-- ADD CONSTRAINT FK_FoodBooking_User FOREIGN KEY (Username) REFERENCES Users(Username);
+
+-- -- FoodBookings -> Food
+-- ALTER TABLE FoodBookings
+-- ADD CONSTRAINT FK_FoodBooking_Food FOREIGN KEY (FoodId) REFERENCES Food(Id);
 
 -- FoodBookings -> ShowBookings
-ALTER TABLE FoodBookings
-ADD CONSTRAINT FK_FoodBooking_ShowBooking FOREIGN KEY (ShowBookingId) REFERENCES ShowBookings(Id);
+-- ALTER TABLE FoodBookings
+-- ADD CONSTRAINT FK_FoodBooking_ShowBooking FOREIGN KEY (ShowBookingId) REFERENCES ShowBookings(Id);
 
 -- DrinkBookings -> Users
-ALTER TABLE DrinkBookings
-ADD CONSTRAINT FK_DrinkBooking_User FOREIGN KEY (Username) REFERENCES Users(Username);
+-- ALTER TABLE DrinkBookings
+-- ADD CONSTRAINT FK_DrinkBooking_User FOREIGN KEY (Username) REFERENCES Users(Username);
 
 -- DrinkBookings -> Drinks
-ALTER TABLE DrinkBookings
-ADD CONSTRAINT FK_DrinkBooking_Drink FOREIGN KEY (DrinkId) REFERENCES Drinks(Id);
+-- ALTER TABLE DrinkBookings
+-- ADD CONSTRAINT FK_DrinkBooking_Drink FOREIGN KEY (DrinkId) REFERENCES Drinks(Id);
 
 -- DrinkBookings -> ShowBookings
-ALTER TABLE DrinkBookings
-ADD CONSTRAINT FK_DrinkBooking_ShowBooking FOREIGN KEY (ShowBookingId) REFERENCES ShowBookings(Id);
+-- ALTER TABLE DrinkBookings
+-- ADD CONSTRAINT FK_DrinkBooking_ShowBooking FOREIGN KEY (ShowBookingId) REFERENCES ShowBookings(Id);
 
 -- ShowsSeatsNotAvailability -> Shows
 ALTER TABLE ShowsSeatsNotAvailability
@@ -404,17 +398,10 @@ CALL GenerateSeats(14, 120);
 CALL GenerateSeats(15, 80);
 CALL GenerateSeats(16, 80);
 
-select * from seats;
-
-select * from food;
-
-insert into food(FoodName, Image, Price) 
+insert into snacks(ItemName, Image, Price)
 values ('Small Popcorn', "/posters/popcorn_s.png", 30000),
 ('Medium Popcorn', "/posters/popcorn_m.png", 40000),
-('Large Popcorn', "/posters/popcorn_l.png", 50000);
-
-select * from drinks;
-
-insert into drinks(DrinkName, Image, Price)
-values ("Pepsi 200ml", "/posters/pepsi.png", 20000),
+('Large Popcorn', "/posters/popcorn_l.png", 50000),
+("Pepsi 200ml", "/posters/pepsi.png", 20000),
 ("Coke 200ml", "/posters/coke.png", 20000);
+select * from snacks;

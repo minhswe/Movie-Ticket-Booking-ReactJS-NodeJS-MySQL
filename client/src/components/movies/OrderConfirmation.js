@@ -8,7 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 const OrderConfirmation = ({selectedSeat, selectedSnacks, showPrice, total}) => {
-console.log("order confirmation: ", selectedSeat)
+// console.log("order confirmation: ", selectedSeat)
   const moneyFormat = (money) => {
     return new Intl.NumberFormat("vi-VN", {
         style: "currency",
