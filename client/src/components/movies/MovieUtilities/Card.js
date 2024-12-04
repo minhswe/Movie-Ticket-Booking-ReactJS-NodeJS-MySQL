@@ -8,21 +8,44 @@ import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
 import FormatReleaseDate from "../../../utilities/FormatReleaseDate";
 import FormatGenres from "../../../utilities/FormatGenres";
+import "./Card.css";
 export default function MediaCard({ Movie }) {
     const navigate = useNavigate();
     const handleClick = (Movie) => {
         navigate(`/movie/${Movie.Id}`, { state: { Movie } });
     };
     return (
-        <Card sx={{ width: "22%", height: 550, marginTop: "20px" }}>
+        <Card
+            sx={{
+                width: "200px",
+                height: 500,
+                marginTop: "20px",
+                display: "flex",
+                flexDirection: "column",
+                marginRight: 5,
+                position: "relative",
+                // backgroundColor: "rgba(2,32,84,255)"
+                // boxShadow: "none",
+            }}
+        >
             <CardMedia
-                sx={{ height: "60%", width: "100%" }}
+                sx={{
+                    height: "260px",
+                    width: "100%",
+                    objectFit: "cover",
+                    backgroundColor: "#ccc", // Placeholder color for images with empty areas
+                }}
                 image={`${process.env.REACT_APP_API_URL}/${Movie.Poster}`}
                 title="Movie's poster"
             />
-            <CardContent>
+            <CardContent
+                sx={{
+                    overflow: "hidden", // Hide excess content
+                    textOverflow: "ellipsis", // Ellipsis for overflowing text
+                }}
+            >
                 <Typography
-                    sx={{ fontSize: 14, color: "#222", fontWeight: "bold" }}
+                    sx={{ fontSize: 15, color: "#333", fontWeight: "bold", }}
                     gutterBottom
                     component="div"
                 >
@@ -56,11 +79,18 @@ export default function MediaCard({ Movie }) {
                     </span>
                 </Typography>
             </CardContent>
-            <CardActions>
-                <Button size="small" onClick={() => handleClick(Movie)}>
+            <CardActions
+                sx={{
+                    position: "absolute", // Make CardActions fixed at the bottom
+                    bottom: 0, // Align it to the bottom of the card
+                    width: "100%", // Full width to match the card
+                    justifyContent: "space-between", // Spread buttons horizontally
+                }}
+            >
+                <Button variant="outlined" size="small" onClick={() => handleClick(Movie)}>
                     Detail
                 </Button>
-                <Button size="small">Booking</Button>
+                <Button variant="contained" size="small">Booking</Button>
             </CardActions>
         </Card>
     );

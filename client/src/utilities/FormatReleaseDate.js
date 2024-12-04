@@ -2,18 +2,18 @@ import React from "react";
 
 const FormatReleaseDate = (releaseDate) => {
     const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
         "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sepr",
+        "Oct",
+        "Nov",
+        "Dec",
     ];
     if (!releaseDate) return null;
 

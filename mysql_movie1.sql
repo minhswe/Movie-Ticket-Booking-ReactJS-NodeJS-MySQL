@@ -107,7 +107,7 @@ CREATE TABLE SeatBookings (
     ShowBookingId INT
 );
 
-CREATE TABLE ShowsSeatsNotAvailability (
+CREATE TABLE SeatForShow (
     Id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	Username varchar(100),
     ShowId INT NOT NULL,
@@ -213,13 +213,13 @@ ADD CONSTRAINT FK_SnackBooking_ShowBooking FOREIGN KEY (ShowBookingId) REFERENCE
 -- ALTER TABLE DrinkBookings
 -- ADD CONSTRAINT FK_DrinkBooking_ShowBooking FOREIGN KEY (ShowBookingId) REFERENCES ShowBookings(Id);
 
--- ShowsSeatsNotAvailability -> Shows
-ALTER TABLE ShowsSeatsNotAvailability
-ADD CONSTRAINT FK_ShowsSeatsNotAvailability_Show FOREIGN KEY (ShowId) REFERENCES Shows(Id);
+-- SeatForShow -> Shows
+ALTER TABLE SeatForShow
+ADD CONSTRAINT FK_SeatForShow_Show FOREIGN KEY (ShowId) REFERENCES Shows(Id);
 
--- ShowsSeatsNotAvailability -> Seats
-ALTER TABLE ShowsSeatsNotAvailability
-ADD CONSTRAINT FK_ShowsSeatsNotAvailability_Seat FOREIGN KEY (SeatId) REFERENCES Seats(Id);
+-- SeatForShow -> Seats
+ALTER TABLE SeatForShow
+ADD CONSTRAINT FK_SeatForShow_Seat FOREIGN KEY (SeatId) REFERENCES Seats(Id);
 
 -- initialize values
 
@@ -404,4 +404,105 @@ values ('Small Popcorn', "/posters/popcorn_s.png", 30000),
 ('Large Popcorn', "/posters/popcorn_l.png", 50000),
 ("Pepsi 200ml", "/posters/pepsi.png", 20000),
 ("Coke 200ml", "/posters/coke.png", 20000);
-select * from snacks;
+
+    SELECT 
+    showBookings.Id AS BookingId,
+    showBookings.NumberOfSeat,
+    GROUP_CONCAT(DISTINCT seats.SeatName ORDER BY seats.SeatName ASC) AS SeatNames,
+GROUP_CONCAT(
+        DISTINCT 
+        CONCAT(snackBookings.Quantity, ' x ', snacks.ItemName, '') 
+        ORDER BY snacks.ItemName ASC
+    ) AS ItemNames,
+    showBookings.TotalPrice,
+    shows.ShowDate,
+    shows.ShowTime,
+    movies.Title AS MovieTitle,
+    halls.HallNumber,
+    theaters.TheaterName,
+    addresses.AddressName
+FROM 
+    ShowBookings showBookings
+INNER JOIN 
+    Shows shows ON showBookings.ShowId = shows.Id
+INNER JOIN
+    SeatForShow seatForShow ON shows.Id = seatForShow.ShowId
+INNER JOIN
+    Seats seats ON seatForShow.SeatId = seats.Id
+INNER JOIN 
+    SnackBookings snackBookings ON showBookings.Id = snackBookings.ShowBookingId
+INNER JOIN 
+    Snacks snacks ON snackBookings.ItemId = snacks.Id
+INNER JOIN 
+    Movies movies ON shows.MovieId = movies.Id
+INNER JOIN 
+    Halls halls ON shows.HallId = halls.Id
+INNER JOIN 
+    Theaters theaters ON halls.TheaterId = theaters.Id
+INNER JOIN 
+    Addresses addresses ON addresses.Id = theaters.AddressId
+WHERE 
+    showBookings.Username = 'minh@admin'
+GROUP BY 
+    showBookings.Id, showBookings.NumberOfSeat, showBookings.TotalPrice, 
+    shows.ShowDate, shows.ShowTime, movies.Title, halls.HallNumber, 
+    theaters.TheaterName, addresses.AddressName
+ORDER BY 
+    shows.ShowDate DESC, shows.ShowTime DESC;\
+    
+
+DELIMITER $$
+
+CREATE PROCEDURE GetBookingsByUsername(IN user_name VARCHAR(255))
+BEGIN
+    SELECT 
+        showBookings.Id AS BookingId,
+        showBookings.NumberOfSeat,
+        GROUP_CONCAT(DISTINCT seats.SeatName ORDER BY seats.SeatName ASC) AS SeatNames,
+		GROUP_CONCAT(
+        DISTINCT 
+        CONCAT(snackBookings.Quantity, ' x ', snacks.ItemName, '') ORDER BY snacks.ItemName ASC) AS ItemNames,
+        showBookings.TotalPrice,
+        shows.ShowDate,
+        shows.ShowTime,
+        movies.Title AS MovieTitle,
+        halls.HallNumber,
+        theaters.TheaterName,
+        addresses.AddressName,
+        movies.poster
+    FROM 
+        ShowBookings showBookings
+    INNER JOIN 
+        Shows shows ON showBookings.ShowId = shows.Id
+    INNER JOIN
+        SeatForShow seatForShow ON shows.Id = seatForShow.ShowId
+    INNER JOIN
+        Seats seats ON seatForShow.SeatId = seats.Id
+    INNER JOIN 
+        SnackBookings snackBookings ON showBookings.Id = snackBookings.ShowBookingId
+    INNER JOIN 
+        Snacks snacks ON snackBookings.ItemId = snacks.Id
+    INNER JOIN 
+        Movies movies ON shows.MovieId = movies.Id
+    INNER JOIN 
+        Halls halls ON shows.HallId = halls.Id
+    INNER JOIN 
+        Theaters theaters ON halls.TheaterId = theaters.Id
+    INNER JOIN 
+        Addresses addresses ON addresses.Id = theaters.AddressId
+    WHERE 
+        showBookings.Username = user_name
+    GROUP BY 
+        showBookings.Id, showBookings.NumberOfSeat, showBookings.TotalPrice, 
+        shows.ShowDate, shows.ShowTime, movies.Title, halls.HallNumber, 
+        theaters.TheaterName, addresses.AddressName
+    ORDER BY 
+        shows.ShowDate DESC, shows.ShowTime DESC;
+END $$
+
+DELIMITER ;
+
+select * from movies;
+
+    
+

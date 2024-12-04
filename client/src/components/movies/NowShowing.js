@@ -22,12 +22,7 @@ const NowShowing = (movie) => {
         <div className="movie-list-container">
             <div className="movie-list-items">
                 {movies.length > 0 ? (
-                    movies.map((movie) => (
-                        <Card key={movie.Id}
-                        Movie={movie}
-                            
-                        />
-                    ))
+                    movies.map((movie) => <Card key={movie.Id} Movie={movie} />)
                 ) : (
                     <p>No movies currently showing.</p> // Message when there are no movies
                 )}

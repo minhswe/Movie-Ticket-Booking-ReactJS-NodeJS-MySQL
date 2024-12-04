@@ -1,6 +1,6 @@
 const ShowBooking = require("../models/showBooking");
 const SeatBooking = require("../models/seatBooking");
-const ShowSeatNotAvailability = require("../models/showSeatNotAvailability");
+const SeatForShow = require("../models/seatForShow");
 const SnackBooking = require("../models/snackBooking");
 
 const getNextIdCount = async (req, res) => {
@@ -84,7 +84,7 @@ const holdSeatForShow = async (req, res) => {
             });
         }
 
-        const newRecord = await ShowSeatNotAvailability.create({
+        const newRecord = await SeatForShow.create({
             Username: username,
             ShowId: parseInt(showId),
             SeatId: seatId,
@@ -110,7 +110,7 @@ const findSeatNotAvailable = async (req, res) => {
         }
 
         // Query the database for all SeatIds where ShowId matches
-        const seatsNotAvailable = await ShowSeatNotAvailability.findAll({
+        const seatsNotAvailable = await SeatForShow.findAll({
             where: { ShowId: showId },
             attributes: ["SeatId"], // Only select the SeatId column
         });

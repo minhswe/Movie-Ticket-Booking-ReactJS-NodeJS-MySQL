@@ -1,6 +1,6 @@
 import React from "react";
 import logo from "../../public/images/png-logo-removebg-preview.png";
-import "./Style.css";
+import "./Header.css";
 import { NavLink } from "react-router-dom";
 import NavBar from "../navbar/NavBar";
 import UserNav from "../navbar/UserNav";

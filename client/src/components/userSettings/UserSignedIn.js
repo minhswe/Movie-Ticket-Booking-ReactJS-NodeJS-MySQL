@@ -20,6 +20,11 @@ export default function MenuPopupState({ username }) {
         navigate("/user/profile");
     };
 
+    const handleMyPurchase = (popupState, event) => {
+        popupState.close(event);
+        navigate("/user/my-purchase");
+    }
+
     return (
         <PopupState variant="popover" popupId="demo-popup-menu">
             {(popupState) => (
@@ -29,8 +34,8 @@ export default function MenuPopupState({ username }) {
                     </Button>
                     <Menu {...bindMenu(popupState)}>
                         <MenuItem onClick={(event) => handleProfile(popupState, event.currentTarget)}>Profile</MenuItem>
-                        <MenuItem onClick={popupState.close}>
-                            My account
+                        <MenuItem onClick={(event) => handleMyPurchase(popupState, event)}>
+                            My purchase
                         </MenuItem>
                         <MenuItem
                             onClick={(event) =>

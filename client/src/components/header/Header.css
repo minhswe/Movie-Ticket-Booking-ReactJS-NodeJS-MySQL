@@ -1,13 +1,15 @@
-*{
+* {
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
     box-sizing: border-box;
 }
 
 .container{
-    width: 100%;
+    width: 100vw;
     height: 80px;
-    background-color: #000437;
+    background-color: #0a1e5e;
     display: flex;
     justify-content: space-around;
     align-items: center;

@@ -36,6 +36,12 @@ const NavBar = () => {
                     "aria-labelledby": "basic-button",
                     onMouseLeave: handleClose, // Close when mouse leaves menu
                 }}
+                anchorOrigin={{
+                    vertical: "bottom",
+                }}
+                transformOrigin={{
+                    vertical: "top",
+                }}
             >
                 <MenuItem onClick={handleClose}>
                     <StyledLink to={"/movies/nowshowing"}>

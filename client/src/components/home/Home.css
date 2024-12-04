@@ -1,0 +1,13 @@
+/* Container to fit the viewport and prevent scrolling */
+.home-container {
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Prevent scrolling */
+}
+/* Banner image styling */
+.home-banner {
+    width: 100%;
+    height: 100%; /* Make it fill the container */
+    object-fit: cover; /* Ensures the image fits without distortion */
+    overflow: hidden;
+}

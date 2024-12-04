@@ -1,14 +1,15 @@
 .movie-list-container{
     width: 100vw;
+    height: 100vh;
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    /* background-color: #001232; */
 }
 
 .movie-list-items{
     width: 80%;
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     flex-wrap: wrap;
 }
 

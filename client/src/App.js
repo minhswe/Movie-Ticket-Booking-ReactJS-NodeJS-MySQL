@@ -10,18 +10,20 @@ import NowShowing from "./components/movies/NowShowing";
 import MovieDetail from "./components/movies/MoVieDetail";
 import SeatBooking from "./components/movies/SeatBooking";
 import Booking from "./components/movies/Booking";
+import MyPurchase from "./components/userSettings/MyPurchase";
 import './App.css';
 
 const App = () => {
     
     return (
-        // <div className="app-container">
+        <div className="app-container">
             <Router basename="/">
                 <Header />
                 {/* <div className="content"> */}
                     <Routes>
                         <Route element={<ProtectedRoutes />}>
                             <Route path="/user/profile" element={<Profile />} />
+                            <Route path="/user/my-purchase" element={<MyPurchase />} />
                             <Route path="booking-ticket/movie/:movieId/show/:showId" element={<Booking />} />
                         </Route>
                         <Route path="/" element={<Home />} />
@@ -32,7 +34,7 @@ const App = () => {
                     </Routes>
                 {/* </div> */}
             </Router>
-        // </div>
+        </div>
     );
 };
 
