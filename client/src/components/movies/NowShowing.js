@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Card from "./MovieUtilities/Card";
-import axios from "../../api/axios";
+import {movieApi} from "../../api/axios";
 import "./NowShowingStyle.css";
 const NowShowing = (movie) => {
     const [movies, setMovies] = useState([]);
 
     useEffect(() => {
         const fetchNowShowingMovies = async () => {
-            const response = await axios.get("/movies/now-showing", {
+            const response = await movieApi.get("/now-showing", {
                 params: { movieStatusId: 1 },
             });
             setMovies(response.data);

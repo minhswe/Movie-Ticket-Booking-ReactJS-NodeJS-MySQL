@@ -23,7 +23,7 @@ function Header() {
                 </div>
                 <div className="user-menu">
                     {isSignedIn ? (
-                        <UserSignedIn username={authUser} />
+                        <UserSignedIn User={authUser} />
                     ) : (
                         <UserNav />
                     )}

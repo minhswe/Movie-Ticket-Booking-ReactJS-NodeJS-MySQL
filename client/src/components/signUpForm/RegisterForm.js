@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import "./Style.css";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import axios from "axios";
-import CustomizeDialog from "../dialogs/CustomizeDialog";
+import { userApi } from "../../api/axios";
+import StateDialog from "../dialogs/NotificationDialog";
 
 function SignUpForm() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -31,15 +31,11 @@ function SignUpForm() {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post(
-                "http://localhost:8080/users/newUser",
-                formData,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
+            const response = await userApi.post("/newUser", formData, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
             if (response.status === 201) {
                 console.log("Registration successful");
@@ -50,14 +46,14 @@ function SignUpForm() {
             } else {
                 setIsSuccess(false);
                 setIsDialogOpen(true);
-                console.log(response.data)
+                console.log(response.data);
                 setMessage(response.data.message);
                 console.error("Registration failed");
             }
         } catch (error) {
             setIsSuccess(false);
             setIsDialogOpen(true);
-            setMessage(error.response.data.message)
+            setMessage(error.response.data.message);
             console.error("Error:", error);
         }
     };
@@ -130,7 +126,7 @@ function SignUpForm() {
                 </div>
             </div>
 
-            <CustomizeDialog
+            <StateDialog
                 open={isDialogOpen}
                 onClose={handleCLoseDialog}
                 title={
@@ -138,9 +134,7 @@ function SignUpForm() {
                         ? "Registration Complete"
                         : "Registration Unaccomplished"
                 }
-                message={
-                    message
-                }
+                message={message}
                 confirmButtonText="Okay"
                 dialogType={isSuccess ? "success" : "error"}
                 onConfirm={() => {

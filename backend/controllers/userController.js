@@ -1,10 +1,16 @@
 const User = require("../models/user");
+const UserType = require("../models/userType");
 const { Op } = require("sequelize");
 const dotenv = require("dotenv");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
+
 dotenv.config();
+
+User.belongsTo(UserType, { foreignKey: "UserTypeId", as: "UserType" });
+UserType.hasMany(User, { foreignKey: "UserTypeId" });
+
 const getUsers = async (req, res) => {
     try {
         const users = await User.findAll();
@@ -64,66 +70,100 @@ const newUser = async (req, res) => {
 
 const checkUser = async (req, res) => {
     const { username, password } = req.body;
-    console.log(req.body)
-    try{
-        const user = await User.findOne({where: {username}});
+    console.log(req.body);
+    try {
+        const user = await User.findOne({
+            where: { username: username },
+            include: {
+                model: UserType,
+                as: "UserType",
+            },
+        });
         if (!user) {
-            return res.status(401).json({message: "Invalid username or password"});
+            return res
+                .status(401)
+                .json({ message: "Invalid username or password" });
         }
-        const isPasswordValid = await bcrypt.compare(password, user.UserPassword);
+        const isPasswordValid = await bcrypt.compare(
+            password,
+            user.UserPassword
+        );
 
         if (isPasswordValid) {
             const token = jwt.sign(
-                { username: user.Username },
+                {
+                    username: user.Username,
+                    userTypeId: user.UserTypeId,
+                    roleName: user.UserType.RoleName,
+                },
                 process.env.SECRET_KEY,
-                { expiresIn: "1h"}
+                { expiresIn: "1h" }
             );
-            return  res.status(200).json({
+            return res.status(200).json({
                 message: "Sign in successful",
                 token,
-                username: user.Username
-            })
+                username: user.Username,
+                userTypeId: user.UserTypeId,
+                roleName: user.UserType.RoleName,
+            });
         } else {
             return res.status(401).json({
-                message: "Invalid username or password"
+                message: "Invalid username or password",
             });
         }
-    }catch (error) {
-        console.log("Error during sign-in ", error);
+    } catch (error) {
+        // console.log("Error during sign-in ", error);
+        console.error("Error fetching users:", error);
         return res.status(500).json({
-            message: "An error occurred. Please try again later."
-        })
+            message: "An error occurred. Please try again later.",
+        });
     }
 };
 
 const getUser = async (req, res) => {
-    try{
+    try {
         const authHeader = req.headers.authorization;
-        if (!authHeader){
-            return res.status(401).json({ message: "Authorization header missing" });
+        if (!authHeader) {
+            return res
+                .status(401)
+                .json({ message: "Authorization header missing" });
         }
         const token = authHeader.split(" ")[1];
         const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
 
-        const user = await User.findOne({username: decodedToken.username});
+        const user = await User.findOne({
+            where: { username: decodedToken.username },
+            include: { model: UserType, as: "UserType" },
+        });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
         res.status(200).json({
             username: user.Username,
-            password: user.Password,
-            email: user.Email
+            email: user.Email,
+            userTypeId: user.UserTypeId,
+            roleName: user.UserType.RoleName,
         });
     } catch (error) {
         console.error("Error retrieving user data:", error);
         res.status(500).json({ message: "Failed to retrieve user data" });
     }
+};
 
+const countUser = async (req, res) => {
+    try{
+        const countUser = await User.count();
+        res.status(200).json({numberOfUser: countUser});
+    }catch (error){
+        console.error("Error counting users:", error);
+        res.status(500).json({message: "Failed to retrieve counting user data"});
+    }
 }
 
 module.exports = {
     getUsers,
     newUser,
     checkUser,
-    getUser
+    getUser,
+    countUser
 };

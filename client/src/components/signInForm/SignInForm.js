@@ -2,7 +2,7 @@ import React from "react";
 import TextField from "@mui/material/TextField";
 import "./Style.css";
 import Button from "@mui/material/Button";
-import axios from "../../api/axios";
+import {userApi} from "../../api/axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -15,7 +15,7 @@ const SignInForm = () => {
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post("/users/checkUser", {
+            const response = await userApi.post("/checkUser", {
                 username,
                 password,
             });

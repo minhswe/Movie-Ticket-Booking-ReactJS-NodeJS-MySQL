@@ -8,12 +8,15 @@ import Typography from "@mui/material/Typography";
 import SeatBooking from "./SeatBooking";
 import { useLocation, useParams } from "react-router-dom";
 import "./Booking.css";
-import axios from "../../api/axios";
+import { bookingApi, movieApi } from "../../api/axios";
 import Snacks from "./Snacks";
 import Slide from "@mui/material/Slide";
 import Zoom from "@mui/material/Zoom";
 import OrderConfirmation from "./OrderConfirmation";
 import CheckUser from "../../utilities/CheckUser";
+import AnnouncementDialog from "../dialogs/AnnouncementDialog";
+import ConfirmationDialog from "../dialogs/ConfirmationDialog";
+import NotiDialog from "../dialogs/NotificationDialog";
 
 const steps = ["Seat booking", "Snacks", "Order confirmation"];
 
@@ -23,6 +26,28 @@ const Booking = () => {
     const [direction, setDirection] = useState("left");
     const [checked, setChecked] = useState(true);
 
+    const [annouDialogOpen, setAnnouDialogOpen] = useState(false);
+    const [annouDialogTitle, setAnnouDialogTitle] = useState("");
+    const [annouDialogMessage, setAnnouDialogMessage] = useState("");
+
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+    const [confirmDialogTitle, setConfirmDialogTitle] = useState("");
+    const [confirmDialogMessage, setConfirmDialogMessage] = useState("");
+    const [onConfirm, setOnConfirm] = useState(() => () => {});
+    const [onCancel, setOnCancel] = useState(() => () => {});
+
+    const [notiDialogOpen, setNotiDialogOpen] = useState(false);
+    const [notiDialogTitle, setNotiDialogTitle] = useState("");
+    const [notiDialogMessage, setNotiDialogMessage] = useState("");
+    const [isSuccess, setIsSuccess] = useState(null);
+
+    const handleDialogOpen = () => {
+        setAnnouDialogOpen(true);
+    };
+
+    const handleDialogClose = () => {
+        setAnnouDialogOpen(false);
+    };
     const isStepOptional = (step) => {
         return step === 1;
     };
@@ -96,7 +121,7 @@ const Booking = () => {
 
     const fetchShowBookingId = async () => {
         try {
-            const response = await axios.get("/booking/getShowBookingId");
+            const response = await bookingApi.get("/getShowBookingId");
             return response.data;
         } catch (error) {
             console.error("Error fetching the ShowBooking ID count:", error);
@@ -110,7 +135,7 @@ const Booking = () => {
         showId
     ) => {
         try {
-            const response = await axios.post("/booking/addShowBooking", {
+            const response = await bookingApi.post("/addShowBooking", {
                 numberOfSeat,
                 totalPrice,
                 username,
@@ -129,7 +154,7 @@ const Booking = () => {
         showBookingId
     ) => {
         try {
-            const response = await axios.post("/booking/addSeatBooking", {
+            const response = await bookingApi.post("/addSeatBooking", {
                 username,
                 price,
                 seatId,
@@ -141,59 +166,116 @@ const Booking = () => {
         }
     };
 
-    const sendSnackBookingData = async (username, price, itemId, quantity, showBookingId) => {
+    const sendSnackBookingData = async (
+        username,
+        price,
+        itemId,
+        quantity,
+        showBookingId
+    ) => {
         try {
-            const response = await axios.post("/booking/addSnackBooking", {
+            const response = await bookingApi.post("/addSnackBooking", {
                 username,
                 price,
                 itemId,
                 quantity,
-                showBookingId
+                showBookingId,
             });
             console.log("Snack booking data sent successfully:", response.data);
         } catch (error) {
             console.error("Error sending snack booking data:", error);
         }
-    }
+    };
 
-    const holdSeatForShow = async (username ,showId, seatId) => {
+    const holdSeatForShow = async (username, showId, seatId) => {
         try {
-            const response = await axios.post("/booking/holdSeatForShow", {
+            const response = await bookingApi.post("/holdSeatForShow", {
                 username,
                 showId,
-                seatId
+                seatId,
             });
-            console.log("Hold seat for show data sent successfully:", response.data);
+            console.log(
+                "Hold seat for show data sent successfully:",
+                response.data
+            );
         } catch (error) {
             console.error("Error holding seat for show:", error);
         }
     };
 
     const handleFinish = async () => {
-        if (selectedSeat.length <= 0) return;
-        console.log(`handle finish: ${selectedSeat.length}, ${totalPrice}`);
-        const token = localStorage.getItem("token");
-        const user = await CheckUser(token);
-        const showBookingId = await fetchShowBookingId();
-        const numberOfSeat = selectedSeat.length;
-        const username = user.username;
+        if (selectedSeat.length <= 0) {
+            setAnnouDialogTitle("Announcement");
+            setAnnouDialogMessage(
+                "You have not selected any seat for this show."
+            );
+            setAnnouDialogOpen(true);
+            return;
+        }
+        setConfirmDialogTitle("Confirmation");
+        setConfirmDialogMessage(
+            `proceed to payment? \n You need you pay ${moneyFormat(
+                totalPrice
+            )} for this payment`
+        );
+        setConfirmDialogOpen(true);
 
-        sendShowBookingData(numberOfSeat, totalPrice, username, showId);
-        selectedSeat.forEach((seat) => {
-            sendSeatBookingData(username, ticketPrice + showPrice, seat.seatId, showBookingId);
-            holdSeatForShow(username, showId, seat.seatId);
+        const userAgreed = await new Promise((resolve) => {
+            setOnConfirm(() => () => resolve(true)); // Handle "Agree"
+            setOnCancel(() => () => resolve(false)); // Handle "Disagree"
         });
 
-        if (selectedSnacks && Object.keys(selectedSnacks).length > 0) {
-            Object.values(selectedSnacks).forEach((snack) => {
-                if (snack.price && snack.quantity && snack.itemId) {
-                    const price = snack.price * snack.quantity;
-                    sendSnackBookingData(username, price, snack.itemId, snack.quantity, showBookingId);
-                } else {
-                    console.error("Invalid snack data:", snack);
-                }
+        if (!userAgreed) {
+            console.log("User canceled the action.");
+            return;
+        }
+        // console.log(`handle finish: ${selectedSeat.length}, ${totalPrice}`);
+        try{
+            const token = localStorage.getItem("token");
+            const user = await CheckUser(token);
+            const showBookingId = await fetchShowBookingId();
+            const numberOfSeat = selectedSeat.length;
+            const username = user.username;
+    
+            sendShowBookingData(numberOfSeat, totalPrice, username, showId);
+            selectedSeat.forEach((seat) => {
+                sendSeatBookingData(
+                    username,
+                    ticketPrice + showPrice,
+                    seat.seatId,
+                    showBookingId
+                );
+                holdSeatForShow(username, showId, seat.seatId);
             });
-        };
+    
+            if (selectedSnacks && Object.keys(selectedSnacks).length > 0) {
+                Object.values(selectedSnacks).forEach((snack) => {
+                    if (snack.price && snack.quantity && snack.itemId) {
+                        const price = snack.price * snack.quantity;
+                        sendSnackBookingData(
+                            username,
+                            price,
+                            snack.itemId,
+                            snack.quantity,
+                            showBookingId
+                        );
+                    } else {
+                        console.error("Invalid snack data:", snack);
+                    }
+                });
+
+            }
+            setIsSuccess(true);
+            setNotiDialogOpen(true);
+            setNotiDialogTitle("Booking Successfully");
+            setNotiDialogMessage("Enjoy your show at our cinema");
+        }catch (error){
+            console.error("Error during booking operations:", error);
+            setIsSuccess(false);
+            setNotiDialogOpen(true);
+            setNotiDialogTitle("Booking failed");
+            setNotiDialogMessage("An error occurred while processing your booking. Please try again!");
+        }
     };
     // console.log(Show);
     // console.log(movieId, showId);
@@ -201,8 +283,8 @@ const Booking = () => {
         const fetchSeatsForHall = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const response = await axios.get(
-                    `movies/movie/${movieId}/show/${showId}/seats`,
+                const response = await movieApi.get(
+                    `/movie/${movieId}/show/${showId}/seats`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -322,6 +404,38 @@ const Booking = () => {
 
     return (
         <div className="booking-container">
+            <AnnouncementDialog
+                open={annouDialogOpen}
+                onClose={() => setAnnouDialogOpen(false)}
+                title={annouDialogTitle}
+                message={annouDialogMessage}
+            />
+
+            <ConfirmationDialog
+                open={confirmDialogOpen}
+                onClose={() => {
+                    setConfirmDialogOpen(false);
+                }}
+                title={confirmDialogTitle}
+                message={confirmDialogMessage}
+                onAgree={onConfirm}
+                onDisagree={onCancel}
+            />
+            <NotiDialog
+                open={notiDialogOpen}
+                onClose={() => setNotiDialogOpen(false)}
+                title={
+                    isSuccess
+                        ? "Ticket booking successful"
+                        : "Ticket booking failed"
+                }
+                message={notiDialogMessage}
+                confirmButtonText="Okay"
+                dialogType={isSuccess ? "success" : "error"}
+                // onConfirm={() => {
+                //     () => setNotiDialogOpen(false)
+                // }}
+            />
             <div className="stepper-wrapper">
                 <Box sx={{ width: "100%" }}>
                     <Stepper activeStep={activeStep}>
@@ -375,7 +489,8 @@ const Booking = () => {
                                     pt: 2,
                                 }}
                             >
-                                <Button variant="contained"
+                                <Button
+                                    variant="contained"
                                     color="inherit"
                                     disabled={activeStep === 0}
                                     onClick={handleBack}
@@ -385,7 +500,8 @@ const Booking = () => {
                                 </Button>
                                 <Box sx={{ flex: "1 1 auto" }} />
                                 {isStepOptional(activeStep) && (
-                                    <Button variant="outlined"
+                                    <Button
+                                        variant="outlined"
                                         color="inherit"
                                         onClick={handleSkip}
                                         sx={{ mr: 1 }}
@@ -393,7 +509,8 @@ const Booking = () => {
                                         Skip
                                     </Button>
                                 )}
-                                <Button variant="contained"
+                                <Button
+                                    variant="contained"
                                     onClick={
                                         activeStep === steps.length - 1
                                             ? handleFinish

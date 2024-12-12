@@ -8,9 +8,11 @@ import Button from '@mui/joy/Button';
 import TicketModel from "./TicketModal"
 import FormatReleaseDate from "../../../utilities/FormatReleaseDate";
 import Chip from '@mui/joy/Chip';
+import "./TicketCard.css"
+
 export default function RowCard({Ticket}) {
     return (
-        <Card orientation="horizontal" variant="outlined" sx={{ width: 350 }}>
+        <Card orientation="horizontal" variant="outlined" sx={{ width: "100%", marginBottom: "10px"}}>
             <CardOverflow>
                 <AspectRatio ratio="1" sx={{ width: 110 }}>
                     <img
@@ -37,8 +39,11 @@ export default function RowCard({Ticket}) {
                 <Typography level="body-sm" fontWeight="bold">
                     {Ticket.TheaterName}
                 </Typography>
-                <Button variant="soft"><TicketModel ticket={Ticket} /></Button>
             </CardContent>
+            <div className="card-button">
+            <Button sx={{height: "40%"}} variant="soft"><TicketModel ticket={Ticket} /></Button>
+            </div>
+
             <CardOverflow
                 variant="soft"
                 color="primary"

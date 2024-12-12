@@ -147,11 +147,32 @@ const addSnackBooking = async (req, res) => {
     }
 }
 
+const countBooking = async (req, res) => {
+    try{
+        const bookingCount = await ShowBooking.count();
+        res.status(200).json({numberOfBooking: bookingCount});
+    }catch (error){
+        res.status(500).json({ error: "Failed to retrieve booking count" });
+    }
+}
+
+const getTotalAmount = async (req, res) => {
+    try {
+        const totalAmount = await ShowBooking.sum("TotalPrice");
+        res.status(200).json({totalAmount: totalAmount})
+    } catch (error) {
+        console.error("Error calculating total amount:", error);
+        res.status(500).json({ error: "Failed to calculating total amount"});
+    }
+};
+
 module.exports = {
     getNextIdCount,
     addShowBooking,
     addSeatBooking,
     holdSeatForShow,
     findSeatNotAvailable,
-    addSnackBooking
+    addSnackBooking,
+    countBooking,
+    getTotalAmount
 };

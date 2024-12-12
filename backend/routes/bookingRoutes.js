@@ -18,4 +18,9 @@ router.get("/findSeatNotAvailable", bookingController.findSeatNotAvailable);
 
 router.get("/getBookingsByUser", auth, mySQLProcedure.getBookingsByUser);
 
+router.get("/countBooking", auth, bookingController.countBooking);
+
+router.get("/getTotalAmount", bookingController.getTotalAmount);
+
+
 module.exports = router;

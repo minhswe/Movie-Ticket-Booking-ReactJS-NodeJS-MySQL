@@ -14,4 +14,6 @@ router.post('/checkUser', UserController.checkUser);
 
 router.get("/profile", auth, UserController.getUser);
 
+router.get("/countUser", auth, UserController.countUser);
+
 module.exports = router;

@@ -1,0 +1,15 @@
+.tickets-history-container {
+    width: 50%;
+    height: 80%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* border: 1px solid black; */
+}
+
+.tickets-wrapper{
+    width: 90%;
+    height: 90%;
+    display: block;
+}

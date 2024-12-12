@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import "./SeatBooking.css";
 import { styled } from "@mui/material";
-import axios from "../../api/axios";
+import {bookingApi} from "../../api/axios";
 
 const SeatBooking = ({
     selectedSeat,
@@ -73,7 +73,7 @@ const SeatBooking = ({
     const findSeatNotAvailable = async () => {
         try {
             // Make a GET request to the server with the showId as a query parameter
-            const response = await axios.get("/booking/findSeatNotAvailable", {
+            const response = await bookingApi.get("/findSeatNotAvailable", {
                 params: { showId: showId },
             });
     

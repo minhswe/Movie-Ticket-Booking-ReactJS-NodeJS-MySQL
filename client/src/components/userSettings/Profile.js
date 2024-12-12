@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import "./ProfileStyle.css";
-import axios from "../../api/axios";
+import {userApi} from "../../api/axios";
 
 const Profile = () => {
     const [userData, setUserData] = useState({
@@ -14,7 +14,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             const token = localStorage.getItem("token");
-            const response = await axios.get("/users/profile", {
+            const response = await userApi.get("/profile", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             // console.log(response)

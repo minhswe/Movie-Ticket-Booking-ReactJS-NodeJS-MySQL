@@ -1,6 +1,6 @@
 import React from "react";
 import ComboCard from "./MovieUtilities/ComboCard"
-import axios from "../../api/axios"
+import {movieApi} from "../../api/axios"
 const Snacks = ({comboPrice, setComboPrice, selectedSnacks, setSelectedSnacks}) => {
     const [snacks, setSnacks] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
@@ -12,7 +12,7 @@ const Snacks = ({comboPrice, setComboPrice, selectedSnacks, setSelectedSnacks}) 
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get("movies/snacks");
+                const response = await movieApi.get("/snacks");
                 console.log(response.data);
                 setSnacks(response.data);
             } catch (error) {

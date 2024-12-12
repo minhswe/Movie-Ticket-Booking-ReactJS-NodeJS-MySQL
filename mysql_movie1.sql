@@ -443,13 +443,13 @@ INNER JOIN
     Addresses addresses ON addresses.Id = theaters.AddressId
 WHERE 
     showBookings.Username = 'minh@admin'
-GROUP BY 
-    showBookings.Id, showBookings.NumberOfSeat, showBookings.TotalPrice, 
-    shows.ShowDate, shows.ShowTime, movies.Title, halls.HallNumber, 
-    theaters.TheaterName, addresses.AddressName
+   GROUP BY 
+        showBookings.Id
 ORDER BY 
-    shows.ShowDate DESC, shows.ShowTime DESC;\
+    shows.ShowDate DESC, shows.ShowTime DESC;
     
+drop procedure GetBookingsByUsername;
+DELIMITER $$
 
 DELIMITER $$
 
@@ -458,10 +458,37 @@ BEGIN
     SELECT 
         showBookings.Id AS BookingId,
         showBookings.NumberOfSeat,
-        GROUP_CONCAT(DISTINCT seats.SeatName ORDER BY seats.SeatName ASC) AS SeatNames,
-		GROUP_CONCAT(
-        DISTINCT 
-        CONCAT(snackBookings.Quantity, ' x ', snacks.ItemName, '') ORDER BY snacks.ItemName ASC) AS ItemNames,
+        (
+            SELECT 
+                GROUP_CONCAT(DISTINCT seats.SeatName ORDER BY seats.SeatName ASC)
+            FROM 
+                SeatForShow sfs
+            INNER JOIN 
+                Seats seats ON sfs.SeatId = seats.Id
+            WHERE 
+                sfs.ShowId = shows.Id
+                AND sfs.SeatId IN (
+                    SELECT 
+                        sb.SeatId
+                    FROM 
+                        SeatBookings sb
+                    WHERE 
+                        sb.ShowBookingId = showBookings.Id
+                )
+        ) AS SeatNames,
+        (
+            SELECT 
+                GROUP_CONCAT(
+                    DISTINCT CONCAT(snackBookings.Quantity, ' x ', snacks.ItemName, '') 
+                    ORDER BY snacks.ItemName ASC
+                )
+            FROM 
+                SnackBookings snackBookings
+            INNER JOIN 
+                Snacks snacks ON snackBookings.ItemId = snacks.Id
+            WHERE 
+                snackBookings.ShowBookingId = showBookings.Id
+        ) AS ItemNames,
         showBookings.TotalPrice,
         shows.ShowDate,
         shows.ShowTime,
@@ -474,14 +501,6 @@ BEGIN
         ShowBookings showBookings
     INNER JOIN 
         Shows shows ON showBookings.ShowId = shows.Id
-    INNER JOIN
-        SeatForShow seatForShow ON shows.Id = seatForShow.ShowId
-    INNER JOIN
-        Seats seats ON seatForShow.SeatId = seats.Id
-    INNER JOIN 
-        SnackBookings snackBookings ON showBookings.Id = snackBookings.ShowBookingId
-    INNER JOIN 
-        Snacks snacks ON snackBookings.ItemId = snacks.Id
     INNER JOIN 
         Movies movies ON shows.MovieId = movies.Id
     INNER JOIN 
@@ -492,17 +511,24 @@ BEGIN
         Addresses addresses ON addresses.Id = theaters.AddressId
     WHERE 
         showBookings.Username = user_name
-    GROUP BY 
-        showBookings.Id, showBookings.NumberOfSeat, showBookings.TotalPrice, 
-        shows.ShowDate, shows.ShowTime, movies.Title, halls.HallNumber, 
-        theaters.TheaterName, addresses.AddressName
     ORDER BY 
-        shows.ShowDate DESC, shows.ShowTime DESC;
+        showBookings.Id DESC;
 END $$
 
 DELIMITER ;
 
-select * from movies;
-
+select * from movies where movies.MovieStatusId = 1;
+select * from shows;
+select * from showbookings;
+   SELECT 
+        m.Id AS MovieId,
+        m.Title AS MovieTitle,
+        SUM(sb.NumberOfSeat) AS TotalSeatsBooked
+    FROM Movies m
+    LEFT JOIN Shows s ON m.Id = s.MovieId
+    LEFT JOIN ShowBookings sb ON s.Id = sb.ShowId
+    GROUP BY m.Id, m.Title
+    ORDER BY TotalSeatsBooked DESC
+    LIMIT 3;
     
 

@@ -8,34 +8,19 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
 const BootstrapDialog = styled(Dialog)(({ theme, dialogType }) => ({
     "& .MuiDialog-paper": {
         maxWidth: "md", // Set to medium (you can use "sm", "md", "lg", etc. or a custom width)
-        width: "400px", // Set a custom width if desired
-    },
-    "& .MuiDialogContent-root": {
-        padding: theme.spacing(2),
-        backgroundColor: dialogType === "success" 
-            ? theme.palette.success.light 
-            : theme.palette.error.light,
-        color: dialogType === "success" 
-            ? theme.palette.success.contrastText 
-            : theme.palette.error.contrastText,
-    },
-    "& .MuiDialogActions-root": {
-        padding: theme.spacing(1),
-        backgroundColor: dialogType === "success" 
-            ? theme.palette.success.light 
-            : theme.palette.error.light,
-    },
+        width: "350px", // Set a custom width if desired
+    }
 }));
 
 const TitleWithIcon = styled("div")(({ theme, dialogType }) => ({
     display: "flex",
     alignItems: "center",
+    flexDirection: "column",
     gap: theme.spacing(1),
     color: dialogType === "success" 
         ? theme.palette.success.main 
@@ -61,9 +46,9 @@ export default function CustomizedDialog({
             <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
                 <TitleWithIcon dialogType={dialogType}>
                     {dialogType === "success" ? (
-                        <CheckCircleOutlineIcon />
+                        <CheckCircleIcon sx={{width: "200px", height: "200px"}} />
                     ) : (
-                        <ErrorOutlineIcon />
+                        <ErrorIcon  sx={{width: "200px", height: "200px"}} />
                     )}
                     {title}
                 </TitleWithIcon>
@@ -82,11 +67,21 @@ export default function CustomizedDialog({
                     <CloseIcon />
                 </IconButton>
             </DialogTitle>
-            <DialogContent dividers>
-                <Typography gutterBottom>{message}</Typography>
-            </DialogContent>
-            <DialogActions>
+            <DialogContent
+    dividers
+    sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center", // Optional, for aligning text
+    }}
+>
+    <Typography gutterBottom>{message}</Typography>
+</DialogContent>
+            <DialogActions sx={{display: "flex", alignItems: "center", justifyContent: "center"}}>
                 <Button
+                    sx={{width: "200px"}}
                     variant="contained"
                     color={dialogType === "success" ? "success" : "error"}
                     onClick={onConfirm || onClose}

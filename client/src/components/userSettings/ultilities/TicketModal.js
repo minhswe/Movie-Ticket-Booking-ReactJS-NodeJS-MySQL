@@ -183,7 +183,7 @@ export default function ResponsiveModal({ ticket }) {
                             </Chip>
                         </Typography>
                         <Typography level="body3" mb={1} fontWeight="bold" sx={{marginLeft: "10px"}}>
-                            {ticket.ItemNames.split(",").map((item, index) => (
+                            {ticket.ItemNames && ticket.ItemNames.split(",").map((item, index) => (
                                 <div key={index}>{item}</div>
                             ))}
                         </Typography>

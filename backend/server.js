@@ -5,6 +5,8 @@ const cors = require("cors");
 const userRoutes = require("./routes/userRoute");
 const movieRoutes = require("./routes/movieRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+
 const path = require("path");
 app.use('/public', express.static(path.join(__dirname, 'public')));
 db.dbConnection();
@@ -16,6 +18,7 @@ app.use(express.json());
 app.use("/users", userRoutes);
 app.use("/movies", movieRoutes);
 app.use("/booking", bookingRoutes)
+app.use("/admin", adminRoutes);
 
 app.listen(8080, () => {
     console.log("Server is running at http://localhost:8080");

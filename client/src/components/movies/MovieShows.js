@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../api/axios";
+import { movieApi } from "../../api/axios";
 import GradientCircularProgress from "./MovieUtilities/gradientCircularProgress";
 import "./MovieShows.css";
 import ShowSection from "./MovieUtilities/ShowSection";
@@ -12,7 +12,7 @@ const MovieShows = ({ selectedDate, movieId, Movie }) => {
         const fetchingShowsByDate = async () => {
             setLoading(true);
             try {
-                const response = await axios.get("/movies/shows", {
+                const response = await movieApi.get("/shows", {
                     params: { selectedDate: selectedDate, movieId: movieId },
                 });
                 setShows(response.data);
