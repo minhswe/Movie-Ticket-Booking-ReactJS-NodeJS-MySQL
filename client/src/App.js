@@ -11,7 +11,9 @@ import MovieDetail from "./components/movies/MoVieDetail";
 import SeatBooking from "./components/movies/SeatBooking";
 import Booking from "./components/movies/Booking";
 import MyPurchase from "./components/userSettings/MyPurchase";
-import AdHome from "./components/admins/AdHome"
+import AdHome from "./components/admins/AdHome";
+import MovieDetailManagement from "./components/admins/movieManagement/MovieDetailManagement";
+
 import "./App.css";
 
 const App = () => {
@@ -32,14 +34,13 @@ const App = () => {
                             element={<Booking />}
                         />
                     </Route>
-
                     <Route element={<ProtectedRoutes requiredUserType={1} />}>
+                        <Route path="/admin/dashboard" element={<AdHome />} />
                         <Route
-                            path="/admin/dashboard"
-                            element={<AdHome />}
+                            path="/admin/movie-details"
+                            element={<MovieDetailManagement />}
                         />
                     </Route>
-
                     //public routes
                     <Route path="/" element={<Home />} />
                     <Route path="/user/register" element={<RegisterForm />} />

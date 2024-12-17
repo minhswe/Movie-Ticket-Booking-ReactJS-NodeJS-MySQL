@@ -16,6 +16,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MovieCreationIcon from '@mui/icons-material/MovieCreation';
 import TheatersIcon from '@mui/icons-material/Theaters';
 import AdDashboard from "./AdDashBoard";
+import MovieManagement from "./movieManagement/MovieManagement";
+
 const drawerWidth = 240;
 
 const PersistentDrawer = () => {
@@ -33,7 +35,7 @@ const PersistentDrawer = () => {
             case "Shows":
                 return <div>Shows Content</div>;
             case "Movies":
-                return <div>Movies Content</div>;
+                return <MovieManagement />
             case "BackToWebsite":
                 return window.location.href = "http://localhost:3000";
             default:

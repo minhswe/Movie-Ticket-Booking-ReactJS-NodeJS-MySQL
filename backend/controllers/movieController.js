@@ -8,7 +8,7 @@ const Address = require("../models/address.js");
 const Seat = require("../models/seat.js");
 const SeatType = require("../models/seattypes.js");
 const Snack = require("../models/snack.js");
-
+const fs = require("fs");
 
 Movie.belongsToMany(Genre, { through: MoviesGenres, foreignKey: "MovieId" });
 Genre.belongsToMany(Movie, { through: MoviesGenres, foreignKey: "GenreId" });
@@ -128,6 +128,66 @@ const getSnacks = async (req, res) => {
     }catch (error){
         console.error("Error fetching snacks:", error);
         res.status(500).json({ error: "Failed to fetch snacks" });
+    }
+}
+
+const addNewMovie = async (req, res) => {
+    try{
+
+    }catch (error){
+
+    }
+}
+
+const updateMovie = async (req, res) => {
+    try{
+        const { params, body, file } = req;
+
+        const movieId = params.id;
+
+        const movie = await Movie.findByPk(movieId);
+        
+        if (!movie) {
+            return res.status(404).json({
+                success: false,
+                error: "Movie not found",
+            });
+        }
+
+        let posterPath = movie.Poster;
+        if (file) {
+            const posterFileName = `${Date.now()}_${file.originalname}`;
+            const newPosterPath = `/public/posters/${posterFileName}`;
+            const targetPath = path.join(__dirname, "..", "public", "posters", posterFileName);
+
+            // Save the new poster file
+            fs.writeFileSync(targetPath, file.buffer);
+
+            if (posterPath) {
+                const oldPosterPath = path.join(__dirname, "..", posterPath);
+                if (fs.existsSync(oldPosterPath)) {
+                    fs.unlinkSync(oldPosterPath); // Delete the old file
+                }
+            }
+
+            posterPath = newPosterPath; // Update the path
+
+            await movie.update({
+                ...body,
+                Poster: posterPath, // Update the poster path in the database
+            });
+
+            return res.status(200).json({
+                success: true,
+                data: movie,
+            });
+        }
+    }catch (error){
+        console.error("Error updating movie:", error);
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
     }
 }
 
