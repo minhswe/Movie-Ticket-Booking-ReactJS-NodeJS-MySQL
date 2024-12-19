@@ -132,17 +132,6 @@ const MovieDetailManagement = () => {
         }
     };
 
-    // const uploadImage = async (base64Image) => {
-    //     try {
-    //         const formData = new FormData();
-    //         formData.append("file", base64Image);
-    //         const response = await adminApi.post("/uploadPoster", formData);
-    //         return response.data.filePath; // Assuming the API returns the file path
-    //     } catch (error) {
-    //         console.error("Error uploading image:", error);
-    //         throw new Error("Image upload failed");
-    //     }
-    // };
 
     const uploadImage = async (base64Image) => {
         try {
@@ -162,27 +151,85 @@ const MovieDetailManagement = () => {
             throw new Error("Image upload failed");
         }
     };
-    
 
     const handleSaveChanges = async () => {
         try {
-            const payload = {
-                id: formData.id,
-                title: formData.title,
-                genres: formData.genres.map((genre) => genre.GenreName), // Extract genre names
-                runningTime: formData.runningTime,
-                description: formData.description,
-                poster: formData.poster.startsWith("data:")
-                    ? await uploadImage(formData.poster) // Upload if it's a local image
-                    : formData.poster, // Keep existing poster URL
-                releaseDate: formData.releaseDate,
-                trailer: formData.trailer,
-                status: formData.status,
-            };
-
-            console.log(payload)
-        } catch (error) {}
+            // console.log(formData); // Debugging to check the structure of formData
+    
+            // Ensure genres exists and is an array
+            const genres = Array.isArray(formData.genres) ? formData.genres : [];
+    
+            const formDataPayload = new FormData();
+    
+            // Append other movie details to the FormData
+            formDataPayload.append('id', formData.id);
+            formDataPayload.append('title', formData.title);
+            formDataPayload.append('genres', JSON.stringify(genres.map((genre) => genre.GenreName))); // Handle genres properly
+            formDataPayload.append('runningTime', formData.runningTime || '');
+            formDataPayload.append('description', formData.description || '');
+            formDataPayload.append('releaseDate', formData.releaseDate || '');
+            formDataPayload.append('trailer', formData.trailer || '');
+            formDataPayload.append('status', formData.status || '');
+            // Append the poster
+            if (formData.poster && formData.poster.startsWith('data:')) {
+                // Convert base64 string to Blob and append it
+                const blob = await uploadImage(formData.poster);
+                console.log("blob", blob.split('/').pop())
+                formDataPayload.append('poster', `${blob.split('/').pop()}`); // Filename is optional
+            } else if (formData.poster) {
+                formDataPayload.append('poster', formData.poster); // Existing poster URL
+            }
+            console.log(formData.poster);
+            // console.log('FormData Payload:');
+            // for (const [key, value] of formDataPayload.entries()) {
+            //     console.log(`${key}:`, value);
+            // }
+            // Send PUT request to update the movie
+            const response = await adminApi.put(`/updateMovie/${formData.id}`, formDataPayload, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+    
+            if (response.status === 200) {
+                console.log('Movie updated successfully:', response.data);
+            } else {
+                console.error('Failed to update movie:', response.status);
+            }
+        } catch (error) {
+            console.error('Error updating movie:', error);
+        }
     };
+    
+    
+    
+
+    // const handleSaveChanges = async () => {
+    //     try {
+    //         const payload = {
+    //             id: formData.id,
+    //             title: formData.title,
+    //             genres: formData.genres.map((genre) => genre.GenreName), // Extract genre names
+    //             runningTime: formData.runningTime,
+    //             description: formData.description,
+    //             poster: formData.poster.startsWith("data:")
+    //                 ? await uploadImage(formData.poster) // Upload if it's a local image
+    //                 : formData.poster, // Keep existing poster URL
+    //             releaseDate: formData.releaseDate,
+    //             trailer: formData.trailer,
+    //             status: formData.status,
+    //         };
+    //         // console.log(payload)
+    //         const response = await axios.post('/updateMovie', payload);
+
+    //         // Handle the response
+    //         if (response.status === 200) {
+    //             console.log('Movie updated successfully:', response.data);
+    //         } else {
+    //             console.error('Failed to update movie:', response.status);
+    //         }
+    //     } catch (error) {}
+    // };
 
     if (!formData) {
         return null; // Do not render if formData is not available

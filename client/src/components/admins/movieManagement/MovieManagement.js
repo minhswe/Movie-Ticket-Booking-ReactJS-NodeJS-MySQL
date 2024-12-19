@@ -19,7 +19,7 @@ import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 
-import MovieDetailManagement from "./MovieDetailManagement";
+import NewMovieDialog from "./NewMovieDialog"
 import { useNavigate } from "react-router-dom";
 
 const MovieManagement = () => {
@@ -77,12 +77,13 @@ const MovieManagement = () => {
             <div className="movie-management-container">
                 <div className="item-wrapper">
                     <div className="movie-type-container">
-                        <Box sx={{ minWidth: 120 }}>
+                        <Box sx={{ width: "50%" ,display: "flex" }}>
                             <FormControl fullWidth>
                                 {/* <InputLabel id="demo-simple-select-label">
                                     Movie's Status Type
                                 </InputLabel> */}
                                 <Select
+                                sx={{width: "90%"}}
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
                                     value={movieStatus}
@@ -93,6 +94,8 @@ const MovieManagement = () => {
                                     <MenuItem value={2}>Comming Soon</MenuItem>
                                 </Select>
                             </FormControl>
+                            <NewMovieDialog />
+
                         </Box>
                     </div>
                     <div className="movie-table">

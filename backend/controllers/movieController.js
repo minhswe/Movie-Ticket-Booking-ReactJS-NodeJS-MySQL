@@ -8,6 +8,9 @@ const Address = require("../models/address.js");
 const Seat = require("../models/seat.js");
 const SeatType = require("../models/seattypes.js");
 const Snack = require("../models/snack.js");
+
+const multer = require("multer");
+const path = require('path');
 const fs = require("fs");
 
 Movie.belongsToMany(Genre, { through: MoviesGenres, foreignKey: "MovieId" });
@@ -131,22 +134,120 @@ const getSnacks = async (req, res) => {
     }
 }
 
-const addNewMovie = async (req, res) => {
-    try{
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        // Specify the folder where images will be saved (public/posters/)
+        const uploadDir = "public/posters/";
+        
+        // Ensure the folder exists, create it if it doesn't
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
 
-    }catch (error){
-
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        // Specify the file name (e.g., timestamp + original file name)
+        const fileExtension = path.extname(file.originalname);
+        const fileName = Date.now() + fileExtension;
+        cb(null, fileName);
     }
-}
+});
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5 MB file size limit
+    },
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = /jpeg|jpg|png|gif/;
+        const mimeType = allowedTypes.test(file.mimetype);
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+
+        if (mimeType && extname) {
+            return cb(null, true);
+        } else {
+            cb(new Error("Only image files are allowed"));
+        }
+    }
+});
+
+const uploadPoster = async (req, res) => {
+    console.log(req.file)
+    try {
+        // Check if a file was uploaded
+        if (!req.file) {
+            return res.status(400).json({ error: "No file uploaded" });
+        }
+
+        // Construct the file path to be used by the frontend
+        const filePath = `/public/posters/${req.file.filename}`;
+
+        // Send back the file path in the response
+        res.status(200).json({ filePath });
+
+    } catch (error) {
+        console.error("Error uploading poster:", error);
+        res.status(500).json({ error: "Image upload failed" });
+    }
+};
+
+const addNewMovie = async (req, res) => {
+    console.log(req.file)
+    try {
+        console.log(req.body);
+        const { title, runningTime, description, poster, releaseDate, trailerUrl, movieStatus, genres } = req.body;
+
+        // Check if all required fields are provided
+        // if (!title || !runningTime || !description || !releaseDate || !movieStatus) {
+        //     return res.status(400).json({ error: "All required fields must be provided" });
+        // }
+
+        // Create the new movie entry in the database
+        const newMovie = await Movie.create({
+            Title: title,
+            RunningTime: runningTime,
+            MovieDescription: description,
+            Poster: `/posters/${poster}`,
+            ReleaseDate: releaseDate,
+            Trailer: trailerUrl,
+            MovieStatusId: movieStatus,
+        });
+
+        // If genres are provided, associate them with the movie
+        if (genres && genres.length > 0) {
+            // Find genre instances by their ids and associate them with the movie
+            const genreInstances = await Genre.findAll({
+                where: {
+                    Id: genres,
+                },
+            });
+
+            // Add the movie-genre associations to the MoviesGenres table
+            await newMovie.addGenres(genreInstances);
+        }
+
+        // Respond with the created movie data
+        return res.status(201).json({
+            success: true,
+            data: newMovie,
+        });
+    } catch (error) {
+        console.error("Error adding new movie:", error);
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+};
+
 
 const updateMovie = async (req, res) => {
     try{
         const { params, body, file } = req;
 
-        const movieId = params.id;
-
+        const movieId = parseInt(params.id);
         const movie = await Movie.findByPk(movieId);
-        
         if (!movie) {
             return res.status(404).json({
                 success: false,
@@ -154,34 +255,23 @@ const updateMovie = async (req, res) => {
             });
         }
 
-        let posterPath = movie.Poster;
-        if (file) {
-            const posterFileName = `${Date.now()}_${file.originalname}`;
-            const newPosterPath = `/public/posters/${posterFileName}`;
-            const targetPath = path.join(__dirname, "..", "public", "posters", posterFileName);
+        const updatedData = {
+            Title: body.title,
+            RunningTime: body.runningTime,
+            MovieDescription: body.description,
+            Poster: file ? posterPath : `/posters/${body.poster}`,
+            ReleaseDate: body.releaseDate,
+            Trailer: body.trailer,
+            MovieStatusId: body.status,
+        };
 
-            // Save the new poster file
-            fs.writeFileSync(targetPath, file.buffer);
+        // Update movie in the database
+        await movie.update(updatedData);
 
-            if (posterPath) {
-                const oldPosterPath = path.join(__dirname, "..", posterPath);
-                if (fs.existsSync(oldPosterPath)) {
-                    fs.unlinkSync(oldPosterPath); // Delete the old file
-                }
-            }
-
-            posterPath = newPosterPath; // Update the path
-
-            await movie.update({
-                ...body,
-                Poster: posterPath, // Update the poster path in the database
-            });
-
-            return res.status(200).json({
-                success: true,
-                data: movie,
-            });
-        }
+        return res.status(200).json({
+            success: true,
+            data: movie,
+        });
     }catch (error){
         console.error("Error updating movie:", error);
         return res.status(500).json({
@@ -191,9 +281,35 @@ const updateMovie = async (req, res) => {
     }
 }
 
+const getLatestMovieId = async (req, res) => {
+    try {
+        // Fetch the latest movie based on the highest ID
+        const latestMovie = await Movie.findOne({
+            order: [["Id", "DESC"]],
+            attributes: ["Id"], // Fetch only the `Id` field
+        });
+
+        if (latestMovie) {
+            res.status(200).json({ latestMovieId: (latestMovie.Id + 1) });
+        } else {
+            res.status(404).json({ message: "No movies found." });
+        }
+    } catch (error) {
+        console.error("Error fetching latest movie ID:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+
+
 module.exports = {
     getAllMovie,
     getShowByDate,
     getSeats,
-    getSnacks
+    getSnacks,
+    updateMovie,
+    getLatestMovieId,
+    upload,
+    addNewMovie,
+    uploadPoster,
 };
