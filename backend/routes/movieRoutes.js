@@ -19,4 +19,6 @@ router.post("/uploadPoster", upload.single("poster"), movieController.uploadPost
 
 router.post("/addNewMovie", upload.single("poster"), movieController.addNewMovie)
 
+router.delete("/deleteMovie/:id", movieController.deleteMovieById);
+
 module.exports = router;

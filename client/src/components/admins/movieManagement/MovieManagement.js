@@ -72,6 +72,27 @@ const MovieManagement = () => {
         }
     }
 
+    const handleDeleteMovie = async (movieId) => {
+        try {
+            const response = await movieApi.delete(
+                `/deleteMovie/${movieId}`
+            );
+    
+            if (response.status === 200) {
+                console.log(response.data.message); // Log success message
+                alert("Movie deleted successfully!");
+                // You can update the local state here to remove the deleted movie from the UI
+            }
+        } catch (error) {
+            console.error("Error deleting movie:", error);
+            if (error.response) {
+                alert(error.response.data.message || "Failed to delete the movie");
+            } else {
+                alert("An unexpected error occurred");
+            }
+        }
+    };
+
     return (
         <>
             <div className="movie-management-container">
@@ -216,6 +237,7 @@ const MovieManagement = () => {
                                                             console.log(
                                                                 "Delete Movie"
                                                             );
+                                                            handleDeleteMovie(movie.Id)
                                                         }}
                                                     >
                                                         Delete

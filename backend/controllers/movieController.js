@@ -281,6 +281,31 @@ const updateMovie = async (req, res) => {
     }
 }
 
+const deleteMovieById = async (req, res) => {
+    const { id } = req.params; // Extract the movie ID from the request parameters
+    console.log("id", id)
+    try {
+        const movie = await Movie.findByPk(id); // Find the movie by its primary key
+
+        if (!movie) {
+            return res.status(404).json({
+                message: "Movie not found",
+            });
+        }
+
+        await movie.destroy(); // Delete the movie
+        res.status(200).json({
+            message: "Movie deleted successfully",
+        });
+    } catch (error) {
+        console.error("Error deleting movie:", error);
+        res.status(500).json({
+            message: "An error occurred while deleting the movie",
+            error: error.message,
+        });
+    }
+};
+
 const getLatestMovieId = async (req, res) => {
     try {
         // Fetch the latest movie based on the highest ID
@@ -312,4 +337,5 @@ module.exports = {
     upload,
     addNewMovie,
     uploadPoster,
+    deleteMovieById
 };
